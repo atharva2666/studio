@@ -12,6 +12,7 @@ export default function ThreeBackground() {
   useEffect(() => {
     if (!containerRef.current) return;
 
+    // --- Scene Setup ---
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
     const renderer = new THREE.WebGLRenderer({ 
@@ -23,6 +24,58 @@ export default function ThreeBackground() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
     containerRef.current.appendChild(renderer.domElement);
+
+    // --- Texture Generators ---
+    const createCircleTexture = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 64;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d')!;
+      const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+      gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+      gradient.addColorStop(0.2, 'rgba(255, 255, 255, 0.8)');
+      gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.2)');
+      gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 64, 64);
+      return new THREE.CanvasTexture(canvas);
+    };
+
+    const createStarTexture = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 64;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d')!;
+      ctx.fillStyle = 'white';
+      ctx.beginPath();
+      // Draw a simple 4-pointed star
+      ctx.moveTo(32, 0);
+      ctx.quadraticCurveTo(32, 32, 64, 32);
+      ctx.quadraticCurveTo(32, 32, 32, 64);
+      ctx.quadraticCurveTo(32, 32, 0, 32);
+      ctx.quadraticCurveTo(32, 32, 32, 0);
+      ctx.fill();
+      return new THREE.CanvasTexture(canvas);
+    };
+
+    const createMatrixTexture = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 64;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d')!;
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 48px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(Math.random() > 0.5 ? '1' : '0', 32, 32);
+      return new THREE.CanvasTexture(canvas);
+    };
+
+    const textures = {
+      default: createCircleTexture(),
+      star: createStarTexture(),
+      matrix: createMatrixTexture()
+    };
 
     const getThemeConfig = () => {
       const styles = getComputedStyle(document.documentElement);
@@ -38,15 +91,35 @@ export default function ThreeBackground() {
     themeRef.current = currentTheme;
 
     // --- Scene Objects ---
-    let particles: THREE.Points;
-    let lines: THREE.LineSegments;
-    let specialObjects: THREE.Group = new THREE.Group();
-    scene.add(specialObjects);
-
-    const particlesCount = 2500;
+    const particlesCount = 3000;
     const posAttr = new THREE.BufferAttribute(new Float32Array(particlesCount * 3), 3);
     const colorAttr = new THREE.BufferAttribute(new Float32Array(particlesCount * 3), 3);
     const velAttr = new Float32Array(particlesCount * 3);
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', posAttr);
+    geometry.setAttribute('color', colorAttr);
+
+    const material = new THREE.PointsMaterial({
+      size: 4,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.8,
+      blending: THREE.AdditiveBlending,
+      map: textures.default,
+      depthWrite: false
+    });
+
+    const particles = new THREE.Points(geometry, material);
+    scene.add(particles);
+
+    const lineGeometry = new THREE.BufferGeometry();
+    const lineMaterial = new THREE.LineBasicMaterial({ color: themeColor, transparent: true, opacity: 0.1 });
+    const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+    scene.add(lines);
+
+    const specialObjects = new THREE.Group();
+    scene.add(specialObjects);
 
     const initParticles = () => {
       const theme = themeRef.current;
@@ -54,38 +127,36 @@ export default function ThreeBackground() {
         const i3 = i * 3;
         
         if (theme === 'matrix') {
-          // Columns of falling code
-          posAttr.array[i3] = (Math.random() - 0.5) * 600;
-          posAttr.array[i3 + 1] = Math.random() * 800 - 400;
-          posAttr.array[i3 + 2] = (Math.random() - 0.5) * 600;
-          velAttr[i3 + 1] = -Math.random() * 3 - 2;
+          posAttr.array[i3] = (Math.random() - 0.5) * 800;
+          posAttr.array[i3 + 1] = Math.random() * 1000 - 500;
+          posAttr.array[i3 + 2] = (Math.random() - 0.5) * 800;
+          velAttr[i3 + 1] = -Math.random() * 4 - 2;
           velAttr[i3] = 0;
           velAttr[i3 + 2] = 0;
         } else if (theme === 'nebula') {
-          // Dense starfield cloud
-          const radius = 200 + Math.random() * 300;
+          const radius = 300 + Math.random() * 400;
           const theta = Math.random() * Math.PI * 2;
           const phi = Math.acos(2 * Math.random() - 1);
           posAttr.array[i3] = radius * Math.sin(phi) * Math.cos(theta);
           posAttr.array[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
           posAttr.array[i3 + 2] = radius * Math.cos(phi);
-          velAttr[i3] = (Math.random() - 0.5) * 0.05;
-          velAttr[i3 + 1] = (Math.random() - 0.5) * 0.05;
-          velAttr[i3 + 2] = (Math.random() - 0.5) * 0.05;
-        } else if (theme === 'nature') {
-          posAttr.array[i3] = (Math.random() - 0.5) * 500;
-          posAttr.array[i3 + 1] = (Math.random() - 0.5) * 500;
-          posAttr.array[i3 + 2] = (Math.random() - 0.5) * 500;
-          velAttr[i3] = (Math.random() - 0.5) * 0.2;
-          velAttr[i3 + 1] = -0.2 - Math.random() * 0.3;
+          velAttr[i3] = (Math.random() - 0.5) * 0.1;
+          velAttr[i3 + 1] = (Math.random() - 0.5) * 0.1;
           velAttr[i3 + 2] = (Math.random() - 0.5) * 0.1;
+        } else if (theme === 'nature') {
+          posAttr.array[i3] = (Math.random() - 0.5) * 600;
+          posAttr.array[i3 + 1] = (Math.random() - 0.5) * 600;
+          posAttr.array[i3 + 2] = (Math.random() - 0.5) * 600;
+          velAttr[i3] = (Math.random() - 0.5) * 0.3;
+          velAttr[i3 + 1] = -0.3 - Math.random() * 0.5;
+          velAttr[i3 + 2] = (Math.random() - 0.5) * 0.2;
         } else {
-          posAttr.array[i3] = (Math.random() - 0.5) * 500;
-          posAttr.array[i3 + 1] = (Math.random() - 0.5) * 500;
-          posAttr.array[i3 + 2] = (Math.random() - 0.5) * 500;
-          velAttr[i3] = (Math.random() - 0.5) * 0.15;
-          velAttr[i3 + 1] = (Math.random() - 0.5) * 0.15;
-          velAttr[i3 + 2] = (Math.random() - 0.5) * 0.15;
+          posAttr.array[i3] = (Math.random() - 0.5) * 600;
+          posAttr.array[i3 + 1] = (Math.random() - 0.5) * 600;
+          posAttr.array[i3 + 2] = (Math.random() - 0.5) * 600;
+          velAttr[i3] = (Math.random() - 0.5) * 0.2;
+          velAttr[i3 + 1] = (Math.random() - 0.5) * 0.2;
+          velAttr[i3 + 2] = (Math.random() - 0.5) * 0.2;
         }
 
         colorAttr.array[i3] = themeColor.r;
@@ -96,29 +167,7 @@ export default function ThreeBackground() {
       colorAttr.needsUpdate = true;
     };
 
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', posAttr);
-    geometry.setAttribute('color', colorAttr);
-
-    const material = new THREE.PointsMaterial({
-      size: 1.8,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.8,
-      blending: THREE.AdditiveBlending
-    });
-
-    particles = new THREE.Points(geometry, material);
-    scene.add(particles);
-
-    const lineGeometry = new THREE.BufferGeometry();
-    const lineMaterial = new THREE.LineBasicMaterial({ color: themeColor, transparent: true, opacity: 0.1 });
-    lines = new THREE.LineSegments(lineGeometry, lineMaterial);
-    scene.add(lines);
-
-    initParticles();
-
-    // --- Interaction Logic (Multi-Touch Support) ---
+    // --- Interaction State ---
     let targetRotationX = 0;
     let targetRotationY = 0;
     let currentRotationX = 0;
@@ -126,8 +175,8 @@ export default function ThreeBackground() {
     let isDragging = false;
     let previousX = 0;
     let previousY = 0;
-    let initialTouchDistance = 0;
-    let zoomLevel = 350;
+    let initialPinchDistance = 0;
+    let zoomLevel = 450;
 
     const handleMouseDown = (e: MouseEvent) => {
       isDragging = true;
@@ -153,8 +202,7 @@ export default function ThreeBackground() {
         previousX = e.touches[0].clientX;
         previousY = e.touches[0].clientY;
       } else if (e.touches.length === 2) {
-        // Prepare for pinch-to-zoom
-        initialTouchDistance = Math.hypot(
+        initialPinchDistance = Math.hypot(
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY
         );
@@ -170,26 +218,25 @@ export default function ThreeBackground() {
         previousX = e.touches[0].clientX;
         previousY = e.touches[0].clientY;
       } else if (e.touches.length === 2) {
-        // Pinch-to-zoom
         const currentDistance = Math.hypot(
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY
         );
-        const delta = currentDistance - initialTouchDistance;
-        zoomLevel = Math.max(100, Math.min(800, zoomLevel - delta * 0.5));
-        initialTouchDistance = currentDistance;
+        const delta = currentDistance - initialPinchDistance;
+        zoomLevel = Math.max(100, Math.min(1000, zoomLevel - delta * 1.5));
+        initialPinchDistance = currentDistance;
       }
     };
 
     const handleWheel = (e: WheelEvent) => {
-      zoomLevel = Math.max(100, Math.min(800, zoomLevel + e.deltaY * 0.5));
+      zoomLevel = Math.max(100, Math.min(1000, zoomLevel + e.deltaY * 0.5));
     };
 
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
     window.addEventListener('touchstart', handleTouchStart);
-    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
     window.addEventListener('touchend', handleMouseUp);
     window.addEventListener('wheel', handleWheel);
 
@@ -197,9 +244,22 @@ export default function ThreeBackground() {
       const config = getThemeConfig();
       themeColor = config.color;
       themeRef.current = config.theme;
+      
       lineMaterial.color = themeColor;
       
-      // Update particle colors
+      // Assign correct texture map
+      if (themeRef.current === 'matrix') {
+        material.map = textures.matrix;
+        material.size = 12;
+      } else if (themeRef.current === 'nebula') {
+        material.map = textures.star;
+        material.size = 8;
+      } else {
+        material.map = textures.default;
+        material.size = 5;
+      }
+      material.needsUpdate = true;
+
       const colorArray = colorAttr.array as Float32Array;
       for (let i = 0; i < particlesCount; i++) {
         colorArray[i * 3] = themeColor.r;
@@ -209,20 +269,20 @@ export default function ThreeBackground() {
       colorAttr.needsUpdate = true;
       initParticles();
 
-      // Clear special objects
+      // Setup special objects for themes
       while(specialObjects.children.length > 0) specialObjects.remove(specialObjects.children[0]);
 
       if (themeRef.current === 'cyber') {
-        const grid = new THREE.GridHelper(600, 30, themeColor, themeColor);
-        grid.position.y = -150;
+        const grid = new THREE.GridHelper(800, 40, themeColor, themeColor);
+        grid.position.y = -200;
         grid.material.transparent = true;
-        grid.material.opacity = 0.15;
+        grid.material.opacity = 0.2;
         specialObjects.add(grid);
       } else if (themeRef.current === 'matrix') {
-        const floor = new THREE.GridHelper(1000, 50, themeColor, themeColor);
-        floor.position.y = -300;
+        const floor = new THREE.GridHelper(1200, 60, themeColor, themeColor);
+        floor.position.y = -400;
         floor.material.transparent = true;
-        floor.material.opacity = 0.05;
+        floor.material.opacity = 0.1;
         specialObjects.add(floor);
       }
     };
@@ -236,23 +296,25 @@ export default function ThreeBackground() {
       const theme = themeRef.current;
       const positions = posAttr.array as Float32Array;
 
-      // Update particle positions based on theme
       for (let i = 0; i < particlesCount; i++) {
         const i3 = i * 3;
         
         if (theme === 'matrix') {
           positions[i3 + 1] += velAttr[i3 + 1];
-          if (positions[i3 + 1] < -400) positions[i3 + 1] = 400;
+          if (positions[i3 + 1] < -500) {
+            positions[i3 + 1] = 500;
+            positions[i3] = (Math.random() - 0.5) * 800;
+          }
         } else if (theme === 'nature') {
-          positions[i3] += velAttr[i3] + Math.sin(Date.now() * 0.001 + i) * 0.1;
+          positions[i3] += velAttr[i3] + Math.sin(Date.now() * 0.001 + i) * 0.2;
           positions[i3 + 1] += velAttr[i3 + 1];
           positions[i3 + 2] += velAttr[i3 + 2];
-          if (positions[i3 + 1] < -300) {
-             positions[i3 + 1] = 300;
-             positions[i3] = (Math.random() - 0.5) * 500;
+          if (positions[i3 + 1] < -400) {
+             positions[i3 + 1] = 400;
+             positions[i3] = (Math.random() - 0.5) * 600;
           }
         } else if (theme === 'nebula') {
-          positions[i3] += velAttr[i3] + Math.sin(Date.now() * 0.0005 + i) * 0.05;
+          positions[i3] += velAttr[i3] + Math.sin(Date.now() * 0.0005 + i) * 0.1;
           positions[i3 + 1] += velAttr[i3 + 1];
           positions[i3 + 2] += velAttr[i3 + 2];
         } else {
@@ -260,19 +322,17 @@ export default function ThreeBackground() {
           positions[i3 + 1] += velAttr[i3 + 1];
           positions[i3 + 2] += velAttr[i3 + 2];
           
-          if (Math.abs(positions[i3]) > 400) velAttr[i3] *= -1;
-          if (Math.abs(positions[i3+1]) > 400) velAttr[i3+1] *= -1;
-          if (Math.abs(positions[i3+2]) > 400) velAttr[i3+2] *= -1;
+          if (Math.abs(positions[i3]) > 500) velAttr[i3] *= -1;
+          if (Math.abs(positions[i3+1]) > 500) velAttr[i3+1] *= -1;
+          if (Math.abs(positions[i3+2]) > 500) velAttr[i3+2] *= -1;
         }
       }
       posAttr.needsUpdate = true;
 
-      // Constellation lines for specific themes
       if (theme === 'dark' || theme === 'light' || theme === 'nebula') {
         const linePos = [];
-        const limit = theme === 'nebula' ? 10 : 15;
-        const maxDist = theme === 'nebula' ? 25 : 45;
-        
+        const limit = 20;
+        const maxDist = 50;
         for (let i = 0; i < particlesCount; i += limit) {
           for (let j = i + limit; j < i + (limit * 2) && j < particlesCount; j += limit) {
             const i3 = i * 3, j3 = j * 3;
@@ -288,18 +348,14 @@ export default function ThreeBackground() {
         lines.visible = false;
       }
 
-      // Smooth rotation
       currentRotationX += (targetRotationX - currentRotationX) * 0.05;
       currentRotationY += (targetRotationY - currentRotationY) * 0.05;
       
       scene.rotation.x = currentRotationX;
       scene.rotation.y = currentRotationY;
       
-      // Auto-rotation
       targetRotationY += 0.001;
-
-      // Zoom smooth update
-      camera.position.z += (zoomLevel - camera.position.z) * 0.05;
+      camera.position.z += (zoomLevel - camera.position.z) * 0.1;
 
       renderer.render(scene, camera);
     };
