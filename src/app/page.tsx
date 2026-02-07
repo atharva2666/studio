@@ -1,4 +1,3 @@
-
 'use client';
 
 import Navbar from '@/components/Navbar';
@@ -12,22 +11,16 @@ import AnimeOverlay from '@/components/AnimeOverlay';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { Cpu, ArrowDown, Sparkles } from 'lucide-react';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export default function Home() {
-  const animeMascot = PlaceHolderImages.find(img => img.id === 'anime-waving');
+  const mascotUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqmHoPZmuT_SPf5WUnUHN0cfXHBCGJyAUMGjRb8AugdnDEXQPovm2goyw&s=10";
 
   return (
     <main className="relative min-h-screen selection:bg-primary/30 overflow-x-hidden">
-      {/* Interactive Background with Drag support */}
       <ThreeBackground />
-      
-      {/* Anime Theme Specialized Global Effects */}
       <AnimeOverlay />
-      
       <Navbar />
       
-      {/* Hero Section */}
       <section className="min-h-screen flex flex-col justify-center px-6 md:px-12 max-w-7xl mx-auto pt-32 pb-12 relative z-10 pointer-events-none">
         <div className="animate-in fade-in slide-in-from-bottom-12 duration-1000 relative pointer-events-auto">
           
@@ -47,25 +40,21 @@ export default function Home() {
               </h1>
             </div>
 
-            {/* Anime Theme Mascot - Integrated beside the Hero Text */}
             <div className="anime-mascot flex flex-col items-center justify-center animate-in zoom-in-75 fade-in duration-1000 delay-300">
-              <div className="relative w-72 h-72 md:w-96 md:h-96 lg:w-[500px] lg:h-[600px]">
-                {animeMascot && (
-                  <div className="relative w-full h-full animate-float">
-                    <Image
-                      src={animeMascot.imageUrl}
-                      alt="Anime Mascot Greeting"
-                      fill
-                      className="object-contain filter drop-shadow-[0_0_40px_rgba(255,105,180,0.6)]"
-                      data-ai-hint={animeMascot.imageHint}
-                      priority
-                    />
-                    {/* Animated Speech Bubble */}
-                    <div className="absolute -top-6 -right-10 bg-white/95 backdrop-blur-md px-8 py-4 rounded-[2.5rem] rounded-bl-none border-4 border-pink-400 shadow-[0_10px_40px_rgba(255,105,180,0.4)] animate-bounce">
-                      <span className="text-pink-600 font-black text-lg tracking-tight whitespace-nowrap">HI MASTER! ^_^</span>
-                    </div>
+              <div className="relative w-80 h-80 md:w-[450px] md:h-[450px] lg:w-[600px] lg:h-[600px]">
+                <div className="relative w-full h-full animate-float">
+                  <Image
+                    src={mascotUrl}
+                    alt="Anime Mascot Greeting"
+                    fill
+                    unoptimized
+                    className="object-contain filter drop-shadow-[0_0_50px_rgba(255,105,180,0.7)]"
+                    priority
+                  />
+                  <div className="absolute -top-10 -right-4 bg-white/95 backdrop-blur-md px-10 py-5 rounded-[3rem] rounded-bl-none border-4 border-pink-400 shadow-[0_15px_50px_rgba(255,105,180,0.5)] animate-bounce">
+                    <span className="text-pink-600 font-black text-xl tracking-tight whitespace-nowrap">HI MASTER! ^_^</span>
                   </div>
-                )}
+                </div>
               </div>
             </div>
           </div>
@@ -75,7 +64,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Scroll Indicator */}
         <div 
           className="absolute bottom-12 left-6 md:left-12 flex items-center gap-6 opacity-40 hover:opacity-100 transition-all cursor-pointer group pointer-events-auto"
           onClick={() => {
@@ -89,22 +77,18 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Projects Section */}
       <div id="projects" className="py-24 relative z-10 bg-background/50 backdrop-blur-sm border-y border-foreground/[0.03]">
         <ProjectShowcase />
       </div>
 
-      {/* Terminal Section */}
       <div id="terminal" className="py-24 relative z-10">
         <InteractiveExperience />
       </div>
 
-      {/* Contact Section */}
       <div className="relative z-10">
         <Contact />
       </div>
 
-      {/* Footer & Theme Switcher */}
       <footer className="py-24 border-t border-foreground/[0.03] bg-background/80 backdrop-blur-md relative z-10">
         <div className="max-w-7xl mx-auto px-6 flex flex-col items-center gap-12">
           

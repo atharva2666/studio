@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -15,7 +14,6 @@ export default function AnimeOverlay() {
   const [isAnime, setIsAnime] = useState(false);
 
   useEffect(() => {
-    // Check theme status and listen for changes
     const checkTheme = () => {
       setIsAnime(document.documentElement.classList.contains('anime'));
     };
@@ -23,11 +21,11 @@ export default function AnimeOverlay() {
     checkTheme();
     window.addEventListener('theme-change', checkTheme);
 
-    // Generate leaf properties
-    const generatedLeaves = Array.from({ length: 25 }).map(() => ({
+    // Only generate random leaf properties on the client to avoid hydration mismatch
+    const generatedLeaves = Array.from({ length: 20 }).map(() => ({
       left: `${Math.random() * 100}vw`,
       delay: `${Math.random() * 8}s`,
-      duration: `${12 + Math.random() * 18}s`,
+      duration: `${15 + Math.random() * 15}s`,
       scale: 0.6 + Math.random() * 1.2,
     }));
     setLeaves(generatedLeaves);
@@ -39,7 +37,6 @@ export default function AnimeOverlay() {
 
   return (
     <div className="fixed inset-0 pointer-events-none z-40 overflow-hidden">
-      {/* Floating Sakura Petal Effects */}
       <div className="absolute inset-0">
         {leaves.map((leaf, i) => (
           <div 
