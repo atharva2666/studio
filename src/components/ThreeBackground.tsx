@@ -30,33 +30,35 @@ export default function ThreeBackground() {
     let { color: themeColor, isAnime } = getThemeConfig();
 
     // Configuration for particles
-    const particlesCount = isAnime ? 1500 : 600;
+    const particlesCount = 2000;
     const positions = new Float32Array(particlesCount * 3);
     const velocities = new Float32Array(particlesCount * 3);
     const colors = new Float32Array(particlesCount * 3);
     const sizes = new Float32Array(particlesCount);
-    const angles = new Float32Array(particlesCount); // For rotation drift
+    const flutter = new Float32Array(particlesCount); // For leaf-like wobble
 
-    const resetParticle = (i: number) => {
+    const resetParticle = (i: number, initial = false) => {
       const ix = i * 3;
-      positions[ix] = (Math.random() - 0.5) * 100;
-      positions[ix + 1] = isAnime ? 50 : (Math.random() - 0.5) * 80; // Start at top if anime
-      positions[ix + 2] = (Math.random() - 0.5) * 80;
+      positions[ix] = (Math.random() - 0.5) * 120;
+      positions[ix + 1] = initial ? (Math.random() - 0.5) * 100 : 60; // Start high if resetting
+      positions[ix + 2] = (Math.random() - 0.5) * 100;
       
-      velocities[ix] = (Math.random() - 0.5) * (isAnime ? 0.05 : 0.02);
-      velocities[ix + 1] = isAnime ? -(0.02 + Math.random() * 0.05) : (Math.random() - 0.5) * 0.02;
-      velocities[ix + 2] = (Math.random() - 0.5) * (isAnime ? 0.05 : 0.02);
+      // Horizontal drift
+      velocities[ix] = (Math.random() - 0.5) * 0.05;
+      // Falling speed (randomized for variety)
+      velocities[ix + 1] = -(0.05 + Math.random() * 0.15);
+      velocities[ix + 2] = (Math.random() - 0.5) * 0.05;
 
       colors[ix] = themeColor.r;
       colors[ix + 1] = themeColor.g;
       colors[ix + 2] = themeColor.b;
       
-      sizes[i] = isAnime ? Math.random() * 0.8 + 0.2 : 0.25;
-      angles[i] = Math.random() * Math.PI * 2;
+      sizes[i] = isAnime ? Math.random() * 1.5 + 0.5 : 0.3;
+      flutter[i] = Math.random() * Math.PI * 2;
     };
 
     for (let i = 0; i < particlesCount; i++) {
-      resetParticle(i);
+      resetParticle(i, true);
     }
 
     const particlesGeometry = new THREE.BufferGeometry();
@@ -65,7 +67,7 @@ export default function ThreeBackground() {
     particlesGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.4,
+      size: 0.5,
       vertexColors: true,
       transparent: true,
       opacity: 0.8,
@@ -76,21 +78,28 @@ export default function ThreeBackground() {
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particlesMesh);
 
+    // Constellation lines (only for non-anime modes)
     const lineMaterial = new THREE.LineBasicMaterial({
       color: themeColor,
       transparent: true,
-      opacity: 0.3,
+      opacity: 0.2,
       blending: THREE.AdditiveBlending,
     });
-
     const lineGeometry = new THREE.BufferGeometry();
     const lineMesh = new THREE.LineSegments(lineGeometry, lineMaterial);
     scene.add(lineMesh);
 
-    camera.position.z = 40;
+    camera.position.z = 50;
 
     let mouseX = 0;
     let mouseY = 0;
+    let targetRotationX = 0;
+    let targetRotationY = 0;
+    let currentRotationX = 0;
+    let currentRotationY = 0;
+    let isDragging = false;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
 
     const onThemeChange = () => {
       const config = getThemeConfig();
@@ -98,27 +107,72 @@ export default function ThreeBackground() {
       isAnime = config.isAnime;
       
       lineMaterial.color = themeColor;
-      lineMaterial.opacity = isAnime ? 0 : 0.3; // Hide lines in anime mode
+      lineMaterial.opacity = isAnime ? 0 : 0.2;
       
       const colorArray = particlesGeometry.attributes.color.array as Float32Array;
+      const sizeArray = particlesGeometry.attributes.size.array as Float32Array;
       for (let i = 0; i < particlesCount; i++) {
         colorArray[i * 3] = themeColor.r;
         colorArray[i * 3 + 1] = themeColor.g;
         colorArray[i * 3 + 2] = themeColor.b;
-        
-        // Refresh positions for the new physics if switching to anime
-        if (isAnime && positions[i * 3 + 1] < -40) {
-           positions[i * 3 + 1] = 50;
-        }
+        sizeArray[i] = isAnime ? Math.random() * 1.5 + 0.5 : 0.3;
       }
       particlesGeometry.attributes.color.needsUpdate = true;
+      particlesGeometry.attributes.size.needsUpdate = true;
+    };
+
+    const handleMouseDown = (e: MouseEvent) => {
+      if (e.button === 2 || e.button === 0) { // Right click or left click drag
+        isDragging = true;
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+      }
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isDragging) {
+        const deltaX = e.clientX - lastMouseX;
+        const deltaY = e.clientY - lastMouseY;
+        targetRotationY += deltaX * 0.005;
+        targetRotationX += deltaY * 0.005;
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+      }
+      // Subtle parallax for everyone
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+    };
+
+    const handleMouseUp = () => {
+      isDragging = false;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 2) {
+        const touch = e.touches[0];
+        const deltaX = touch.clientX - lastMouseX;
+        const deltaY = touch.clientY - lastMouseY;
+        targetRotationY += deltaX * 0.01;
+        targetRotationX += deltaY * 0.01;
+        lastMouseX = touch.clientX;
+        lastMouseY = touch.clientY;
+      }
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 2) {
+        lastMouseX = e.touches[0].clientX;
+        lastMouseY = e.touches[0].clientY;
+      }
     };
 
     window.addEventListener('theme-change', onThemeChange);
-    window.addEventListener('mousemove', (e) => {
-      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-    });
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('contextmenu', (e) => e.preventDefault());
 
     const animate = () => {
       requestAnimationFrame(animate);
@@ -131,38 +185,37 @@ export default function ThreeBackground() {
         const iz = i * 3 + 2;
 
         if (isAnime) {
-          // Falling leaves (Sakura) physics
-          angles[i] += 0.01;
-          posArray[ix] += Math.sin(angles[i]) * 0.05 + velocities[ix];
-          posArray[iy] += velocities[iy]; // Falling down
-          posArray[iz] += Math.cos(angles[i]) * 0.02 + velocities[iz];
+          // "Falling Leaf" Physics
+          flutter[i] += 0.02;
+          posArray[ix] += Math.sin(flutter[i]) * 0.05 + velocities[ix];
+          posArray[iy] += velocities[iy]; // Gravity
+          posArray[iz] += Math.cos(flutter[i]) * 0.05 + velocities[iz];
 
-          // Wrap around top
-          if (posArray[iy] < -50) {
-            posArray[iy] = 50;
-            posArray[ix] = (Math.random() - 0.5) * 100;
+          // Reset if fallen past bottom
+          if (posArray[iy] < -60) {
+            resetParticle(i);
           }
         } else {
-          // Normal constellation drift
-          posArray[ix] += velocities[ix];
-          posArray[iy] += velocities[iy];
-          posArray[iz] += velocities[iz];
+          // "Constellation" Physics
+          posArray[ix] += velocities[ix] * 0.5;
+          posArray[iy] += velocities[iy] * 0.2;
+          posArray[iz] += velocities[iz] * 0.5;
 
-          // Wrap around for standard mode
-          if (posArray[ix] > 50) posArray[ix] = -50;
-          if (posArray[ix] < -50) posArray[ix] = 50;
-          if (posArray[iy] > 50) posArray[iy] = -50;
-          if (posArray[iy] < -50) posArray[iy] = 50;
+          // Wrap boundaries
+          if (posArray[ix] > 60) posArray[ix] = -60;
+          if (posArray[ix] < -60) posArray[ix] = 60;
+          if (posArray[iy] > 60) posArray[iy] = -60;
+          if (posArray[iy] < -60) posArray[iy] = 60;
         }
       }
       particlesGeometry.attributes.position.needsUpdate = true;
 
-      // Only update lines if not in anime mode
+      // Update constellation lines if not anime
       if (!isAnime) {
         const linePositions = [];
-        const maxDistance = 12;
-        for (let i = 0; i < particlesCount; i += 5) {
-          for (let j = i + 1; j < i + 10 && j < particlesCount; j++) {
+        const maxDistance = 10;
+        for (let i = 0; i < particlesCount; i += 10) {
+          for (let j = i + 1; j < i + 20 && j < particlesCount; j++) {
             const dx = posArray[i * 3] - posArray[j * 3];
             const dy = posArray[i * 3 + 1] - posArray[j * 3 + 1];
             const dz = posArray[i * 3 + 2] - posArray[j * 3 + 2];
@@ -170,7 +223,7 @@ export default function ThreeBackground() {
 
             if (distSq < maxDistance * maxDistance) {
               linePositions.push(
-                posArray[i * 3], posArray[i * 3 + 1], posArray[i * 3 + 2],
+                posArray[ix], posArray[iy], posArray[iz],
                 posArray[j * 3], posArray[j * 3 + 1], posArray[j * 3 + 2]
               );
             }
@@ -178,12 +231,15 @@ export default function ThreeBackground() {
         }
         lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
       } else {
-        // Clear lines in anime mode
         lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute([], 3));
       }
 
-      scene.rotation.y = (mouseX * 0.1);
-      scene.rotation.x = (-mouseY * 0.1);
+      // Smoothing rotation
+      currentRotationX += (targetRotationX - currentRotationX) * 0.05;
+      currentRotationY += (targetRotationY - currentRotationY) * 0.05;
+
+      scene.rotation.x = currentRotationX + (mouseY * 0.05);
+      scene.rotation.y = currentRotationY + (mouseX * 0.05);
 
       renderer.render(scene, camera);
     };
@@ -201,6 +257,11 @@ export default function ThreeBackground() {
     return () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('theme-change', onThemeChange);
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
       if (containerRef.current && renderer.domElement) {
         containerRef.current.removeChild(renderer.domElement);
       }
@@ -208,5 +269,5 @@ export default function ThreeBackground() {
     };
   }, []);
 
-  return <div ref={containerRef} className="fixed inset-0 -z-10 pointer-events-none" />;
+  return <div ref={containerRef} className="fixed inset-0 -z-10 pointer-events-none cursor-grab active:cursor-grabbing" />;
 }
