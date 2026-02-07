@@ -8,7 +8,7 @@ import InteractiveExperience from '@/components/InteractiveExperience';
 import Contact from '@/components/Contact';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 import { Badge } from '@/components/ui/badge';
-import { Cpu, ArrowDown } from 'lucide-react';
+import { Cpu, ArrowDown, Sparkles } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -21,8 +21,9 @@ export default function Home() {
       {/* Hero Section */}
       <section className="min-h-screen flex flex-col justify-center px-6 md:px-12 max-w-7xl mx-auto pt-24 pb-12 relative z-10">
         <div className="animate-in fade-in slide-in-from-bottom-12 duration-1000">
-          <Badge className="mb-10 bg-primary/10 text-primary border-primary/20 px-6 py-2 rounded-full font-bold tracking-[0.4em] text-[10px] flex w-fit items-center gap-3 backdrop-blur-md anime:animate-float">
+          <Badge className="mb-10 bg-primary/10 text-primary border-primary/20 px-6 py-2 rounded-full font-bold tracking-[0.4em] text-[10px] flex w-fit items-center gap-3 backdrop-blur-md animate-float">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+            <Sparkles className="w-3 h-3 hidden anime:block" />
             NEURAL ENGINE ACTIVE
           </Badge>
           
