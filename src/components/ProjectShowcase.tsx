@@ -4,101 +4,116 @@ import React from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink, Github, Cpu, Brain, Zap, ArrowUpRight } from 'lucide-react';
+import { Brain, Zap, Cpu, ArrowUpRight, Activity } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const projects = [
   {
     title: "Olivia AI",
-    subtitle: "Conversational Agent",
-    description: "Multi-modal transformer-based AI that interprets intent and context with high precision. Optimized for human-like conversational flow.",
-    tags: ["LLMs", "GenKit", "Next.js", "Python"],
-    icon: <Brain className="w-5 h-5" />,
+    subtitle: "Neural Agent",
+    description: "Advanced multi-modal transformer orchestrating human intent through high-fidelity conversational synthesis.",
+    tags: ["GenKit", "Next.js", "Transformers"],
+    icon: <Brain className="w-6 h-6" />,
     image: PlaceHolderImages.find(img => img.id === 'olivia-ai'),
-    accent: "bg-accent/10 text-accent",
+    accent: "bg-primary/20 text-primary",
+    status: "Online",
+    color: "#a855f7"
   },
   {
     title: "AI Test Lab",
-    subtitle: "Benchmarking Engine",
-    description: "Automated reliability testing for generative models. Stress tests prompts, outputs, and edge cases to ensure production readiness.",
-    tags: ["MLOps", "Safety", "Validation"],
-    icon: <Zap className="w-5 h-5" />,
+    subtitle: "Validation Core",
+    description: "Stress-testing generative models for reliability, safety, and production-grade performance metrics.",
+    tags: ["MLOps", "QA", "Safety"],
+    icon: <Zap className="w-6 h-6" />,
     image: PlaceHolderImages.find(img => img.id === 'ai-testing'),
-    accent: "bg-primary/10 text-primary",
+    accent: "bg-accent/20 text-accent",
+    status: "Processing",
+    color: "#ec4899"
   },
   {
     title: "Robo-Core V2",
-    subtitle: "Hardware Controller",
-    description: "A real-time robotics control system utilizing low-latency C++ kernels for high-precision motor coordination and visual feedback loops.",
-    tags: ["C++", "ROS", "Hardware", "Vision"],
-    icon: <Cpu className="w-5 h-5" />,
+    subtitle: "Hardware OS",
+    description: "Low-latency C++ kernels providing real-time motor coordination and visual processing for robotic platforms.",
+    tags: ["ROS", "C++", "Hardware"],
+    icon: <Cpu className="w-6 h-6" />,
     image: PlaceHolderImages.find(img => img.id === 'robotics-project'),
-    accent: "bg-indigo-600/10 text-indigo-600",
+    accent: "bg-blue-500/20 text-blue-400",
+    status: "Active",
+    color: "#3b82f6"
   }
 ];
 
 export default function ProjectShowcase() {
   return (
-    <section id="projects" className="py-32 px-6 md:px-12 max-w-7xl mx-auto">
-      <div className="mb-20">
-        <div className="flex items-center gap-4 mb-4">
-          <div className="h-px w-12 bg-primary" />
-          <span className="text-sm font-bold uppercase tracking-[0.4em] text-primary">Portfolio</span>
+    <section id="projects" className="py-32 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto">
+      <div className="mb-24">
+        <div className="flex items-center gap-6 mb-6">
+          <div className="h-[2px] w-20 bg-primary shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
+          <span className="text-sm font-black uppercase tracking-[0.5em] text-primary">Strategic Deployments</span>
         </div>
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-          <h2 className="text-5xl md:text-7xl font-headline font-black tracking-tight leading-none">
-            ENGINEERED <br /><span className="text-accent italic">EXCELLENCE.</span>
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10">
+          <h2 className="text-6xl md:text-8xl font-headline font-black tracking-tighter leading-[0.85] hero-text-glow">
+            ACTIVE <br /><span className="text-transparent bg-clip-text vibrant-gradient italic">PROTOCOLS.</span>
           </h2>
-          <p className="text-muted-foreground text-xl max-w-md leading-relaxed">
-            A selection of experimental projects at the intersection of machine intelligence and hardware reality.
+          <p className="text-slate-400 text-xl md:text-2xl max-w-lg leading-relaxed font-medium">
+            A curated selection of experiments bridging the gap between algorithmic theory and physical application.
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 sm:gap-16">
         {projects.map((project, idx) => (
           <div key={idx} className="group relative">
-            <Card className="h-full overflow-hidden border-none shadow-none bg-white rounded-[2rem] transition-all duration-500 hover:shadow-[0_40px_80px_-20px_rgba(75,0,130,0.15)] group-hover:-translate-y-3">
-              <div className="relative h-72 overflow-hidden">
+            <Card className="h-full overflow-hidden border-white/5 bg-slate-900/40 backdrop-blur-3xl rounded-[3rem] transition-all duration-700 hover:translate-y-[-1rem] hover:shadow-[0_40px_100px_-20px_rgba(168,85,247,0.2)] group-hover:border-primary/20">
+              <div className="relative h-80 overflow-hidden">
                 {project.image ? (
                   <Image 
                     src={project.image.imageUrl} 
                     alt={project.title}
                     fill
-                    className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                    className="object-cover transition-transform duration-1000 group-hover:scale-110 opacity-80 group-hover:opacity-100"
                     data-ai-hint={project.image.imageHint}
                   />
                 ) : (
-                  <div className="w-full h-full bg-slate-100 flex items-center justify-center">
-                    <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">Image Unavailable</span>
+                  <div className="w-full h-full bg-slate-800 flex items-center justify-center">
+                    <span className="text-slate-500 text-xs font-black tracking-widest uppercase">No Visual Found</span>
                   </div>
                 )}
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-primary/40 transition-colors duration-500" />
-                <div className="absolute top-6 right-6">
-                  <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0 cursor-pointer hover:bg-white hover:text-primary">
-                    <ArrowUpRight className="w-6 h-6" />
+                
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-60" />
+                
+                <div className="absolute top-8 left-8 flex items-center gap-3">
+                  <Badge className="bg-black/60 backdrop-blur-xl border-white/10 text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full">
+                    <Activity className={`w-3 h-3 mr-2 ${project.status === 'Processing' ? 'animate-spin' : 'animate-pulse'}`} style={{ color: project.color }} />
+                    {project.status}
+                  </Badge>
+                </div>
+
+                <div className="absolute top-8 right-8">
+                  <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-2xl border border-white/20 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0 cursor-pointer hover:bg-primary hover:scale-110">
+                    <ArrowUpRight className="w-8 h-8" />
                   </div>
                 </div>
               </div>
               
-              <CardContent className="p-8 pt-10 relative">
-                <div className={`absolute -top-10 left-8 w-20 h-20 rounded-[1.5rem] ${project.accent} backdrop-blur-xl flex items-center justify-center shadow-xl border border-white/20`}>
+              <CardContent className="p-10 pt-12 relative">
+                <div className={`absolute -top-12 left-10 w-24 h-24 rounded-[2rem] ${project.accent} backdrop-blur-3xl flex items-center justify-center shadow-2xl border border-white/10 group-hover:scale-110 transition-transform duration-500`}>
                   {project.icon}
                 </div>
                 
-                <div className="mb-6">
-                  <span className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1 block">
+                <div className="mb-8">
+                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-2 block opacity-70">
                     {project.subtitle}
                   </span>
-                  <h3 className="text-3xl font-headline font-bold mb-3">{project.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed">
+                  <h3 className="text-4xl font-headline font-black mb-4 tracking-tight">{project.title}</h3>
+                  <p className="text-slate-400 text-lg leading-relaxed font-medium">
                     {project.description}
                   </p>
                 </div>
 
-                <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-100">
+                <div className="flex flex-wrap gap-3 pt-6 border-t border-white/5">
                   {project.tags.map(tag => (
-                    <Badge key={tag} variant="secondary" className="bg-gray-50 text-slate-500 border-none font-bold uppercase text-[10px] px-3">
+                    <Badge key={tag} variant="secondary" className="bg-white/5 text-slate-300 border-none font-black uppercase text-[10px] px-4 py-1 rounded-lg">
                       {tag}
                     </Badge>
                   ))}
