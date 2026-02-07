@@ -19,7 +19,7 @@ export default function Home() {
 
   return (
     <main className="relative min-h-screen selection:bg-primary/30 overflow-x-hidden">
-      {/* Interactive Background */}
+      {/* Interactive Background with Drag support */}
       <ThreeBackground />
       
       {/* Anime Theme Specialized Global Effects */}
@@ -28,8 +28,8 @@ export default function Home() {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="min-h-screen flex flex-col justify-center px-6 md:px-12 max-w-7xl mx-auto pt-32 pb-12 relative z-10">
-        <div className="animate-in fade-in slide-in-from-bottom-12 duration-1000 relative">
+      <section className="min-h-screen flex flex-col justify-center px-6 md:px-12 max-w-7xl mx-auto pt-32 pb-12 relative z-10 pointer-events-none">
+        <div className="animate-in fade-in slide-in-from-bottom-12 duration-1000 relative pointer-events-auto">
           
           <Badge className="mb-10 bg-primary/10 text-primary border-primary/20 px-6 py-2 rounded-full font-bold tracking-[0.4em] text-[10px] flex w-fit items-center gap-3 backdrop-blur-md animate-float">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
@@ -48,8 +48,8 @@ export default function Home() {
             </div>
 
             {/* Anime Theme Mascot - Integrated beside the Hero Text */}
-            <div className="anime-mascot flex-col items-center justify-center animate-in zoom-in-75 fade-in duration-1000 delay-300">
-              <div className="relative w-72 h-72 md:w-96 md:h-96 lg:w-[480px] lg:h-[480px]">
+            <div className="anime-mascot flex flex-col items-center justify-center animate-in zoom-in-75 fade-in duration-1000 delay-300">
+              <div className="relative w-72 h-72 md:w-96 md:h-96 lg:w-[500px] lg:h-[600px]">
                 {animeMascot && (
                   <div className="relative w-full h-full animate-float">
                     <Image
@@ -60,9 +60,9 @@ export default function Home() {
                       data-ai-hint={animeMascot.imageHint}
                       priority
                     />
-                    {/* Speech Bubble */}
-                    <div className="absolute top-0 -right-4 bg-white/95 backdrop-blur-md px-8 py-4 rounded-[2rem] rounded-bl-none border-4 border-pink-400 shadow-2xl animate-bounce">
-                      <span className="text-pink-600 font-black text-sm tracking-tight whitespace-nowrap">HELLO MASTER! ^_^</span>
+                    {/* Animated Speech Bubble */}
+                    <div className="absolute -top-6 -right-10 bg-white/95 backdrop-blur-md px-8 py-4 rounded-[2.5rem] rounded-bl-none border-4 border-pink-400 shadow-[0_10px_40px_rgba(255,105,180,0.4)] animate-bounce">
+                      <span className="text-pink-600 font-black text-lg tracking-tight whitespace-nowrap">HI MASTER! ^_^</span>
                     </div>
                   </div>
                 )}
@@ -77,7 +77,7 @@ export default function Home() {
 
         {/* Scroll Indicator */}
         <div 
-          className="absolute bottom-12 left-6 md:left-12 flex items-center gap-6 opacity-40 hover:opacity-100 transition-all cursor-pointer group"
+          className="absolute bottom-12 left-6 md:left-12 flex items-center gap-6 opacity-40 hover:opacity-100 transition-all cursor-pointer group pointer-events-auto"
           onClick={() => {
             document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
           }}
