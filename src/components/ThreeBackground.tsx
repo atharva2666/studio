@@ -29,28 +29,34 @@ export default function ThreeBackground() {
 
     let { color: themeColor, isAnime } = getThemeConfig();
 
-    // Enhanced Constellation Config
-    const particlesCount = isAnime ? 1000 : 600;
+    // Configuration for particles
+    const particlesCount = isAnime ? 1500 : 600;
     const positions = new Float32Array(particlesCount * 3);
     const velocities = new Float32Array(particlesCount * 3);
     const colors = new Float32Array(particlesCount * 3);
     const sizes = new Float32Array(particlesCount);
+    const angles = new Float32Array(particlesCount); // For rotation drift
 
-    for (let i = 0; i < particlesCount; i++) {
+    const resetParticle = (i: number) => {
       const ix = i * 3;
-      positions[ix] = (Math.random() - 0.5) * 80;
-      positions[ix + 1] = (Math.random() - 0.5) * 80;
+      positions[ix] = (Math.random() - 0.5) * 100;
+      positions[ix + 1] = isAnime ? 50 : (Math.random() - 0.5) * 80; // Start at top if anime
       positions[ix + 2] = (Math.random() - 0.5) * 80;
       
       velocities[ix] = (Math.random() - 0.5) * (isAnime ? 0.05 : 0.02);
-      velocities[ix + 1] = (Math.random() - 0.5) * (isAnime ? 0.05 : 0.02);
+      velocities[ix + 1] = isAnime ? -(0.02 + Math.random() * 0.05) : (Math.random() - 0.5) * 0.02;
       velocities[ix + 2] = (Math.random() - 0.5) * (isAnime ? 0.05 : 0.02);
 
       colors[ix] = themeColor.r;
       colors[ix + 1] = themeColor.g;
       colors[ix + 2] = themeColor.b;
       
-      sizes[i] = isAnime ? Math.random() * 0.5 : 0.25;
+      sizes[i] = isAnime ? Math.random() * 0.8 + 0.2 : 0.25;
+      angles[i] = Math.random() * Math.PI * 2;
+    };
+
+    for (let i = 0; i < particlesCount; i++) {
+      resetParticle(i);
     }
 
     const particlesGeometry = new THREE.BufferGeometry();
@@ -59,7 +65,7 @@ export default function ThreeBackground() {
     particlesGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.3,
+      size: 0.4,
       vertexColors: true,
       transparent: true,
       opacity: 0.8,
@@ -73,7 +79,7 @@ export default function ThreeBackground() {
     const lineMaterial = new THREE.LineBasicMaterial({
       color: themeColor,
       transparent: true,
-      opacity: isAnime ? 0.1 : 0.3,
+      opacity: 0.3,
       blending: THREE.AdditiveBlending,
     });
 
@@ -81,14 +87,10 @@ export default function ThreeBackground() {
     const lineMesh = new THREE.LineSegments(lineGeometry, lineMaterial);
     scene.add(lineMesh);
 
-    camera.position.z = 30;
+    camera.position.z = 40;
 
     let mouseX = 0;
     let mouseY = 0;
-    let targetRotationX = 0;
-    let targetRotationY = 0;
-    let currentRotationX = 0;
-    let currentRotationY = 0;
 
     const onThemeChange = () => {
       const config = getThemeConfig();
@@ -96,13 +98,18 @@ export default function ThreeBackground() {
       isAnime = config.isAnime;
       
       lineMaterial.color = themeColor;
-      lineMaterial.opacity = isAnime ? 0.1 : 0.3;
+      lineMaterial.opacity = isAnime ? 0 : 0.3; // Hide lines in anime mode
       
       const colorArray = particlesGeometry.attributes.color.array as Float32Array;
       for (let i = 0; i < particlesCount; i++) {
         colorArray[i * 3] = themeColor.r;
         colorArray[i * 3 + 1] = themeColor.g;
         colorArray[i * 3 + 2] = themeColor.b;
+        
+        // Refresh positions for the new physics if switching to anime
+        if (isAnime && positions[i * 3 + 1] < -40) {
+           positions[i * 3 + 1] = 50;
+        }
       }
       particlesGeometry.attributes.color.needsUpdate = true;
     };
@@ -116,9 +123,6 @@ export default function ThreeBackground() {
     const animate = () => {
       requestAnimationFrame(animate);
 
-      currentRotationX += (targetRotationX - currentRotationX) * 0.05;
-      currentRotationY += (targetRotationY - currentRotationY) * 0.05;
-
       const posArray = particlesGeometry.attributes.position.array as Float32Array;
 
       for (let i = 0; i < particlesCount; i++) {
@@ -127,47 +131,59 @@ export default function ThreeBackground() {
         const iz = i * 3 + 2;
 
         if (isAnime) {
-          // Sakura-like drift
-          posArray[ix] += Math.sin(Date.now() * 0.001 + i) * 0.01 + velocities[ix];
-          posArray[iy] -= 0.02 + velocities[iy]; // Falling effect
-          posArray[iz] += velocities[iz];
+          // Falling leaves (Sakura) physics
+          angles[i] += 0.01;
+          posArray[ix] += Math.sin(angles[i]) * 0.05 + velocities[ix];
+          posArray[iy] += velocities[iy]; // Falling down
+          posArray[iz] += Math.cos(angles[i]) * 0.02 + velocities[iz];
+
+          // Wrap around top
+          if (posArray[iy] < -50) {
+            posArray[iy] = 50;
+            posArray[ix] = (Math.random() - 0.5) * 100;
+          }
         } else {
+          // Normal constellation drift
           posArray[ix] += velocities[ix];
           posArray[iy] += velocities[iy];
           posArray[iz] += velocities[iz];
-        }
 
-        // Wrap around
-        if (posArray[ix] > 40) posArray[ix] = -40;
-        if (posArray[ix] < -40) posArray[ix] = 40;
-        if (posArray[iy] > 40) posArray[iy] = -40;
-        if (posArray[iy] < -40) posArray[iy] = 40;
-        if (posArray[iz] > 40) posArray[iz] = -40;
-        if (posArray[iz] < -40) posArray[iz] = 40;
+          // Wrap around for standard mode
+          if (posArray[ix] > 50) posArray[ix] = -50;
+          if (posArray[ix] < -50) posArray[ix] = 50;
+          if (posArray[iy] > 50) posArray[iy] = -50;
+          if (posArray[iy] < -50) posArray[iy] = 50;
+        }
       }
       particlesGeometry.attributes.position.needsUpdate = true;
 
-      const linePositions = [];
-      const maxDistance = isAnime ? 5 : 12;
-      for (let i = 0; i < particlesCount; i += (isAnime ? 10 : 4)) {
-        for (let j = i + 1; j < i + (isAnime ? 5 : 12) && j < particlesCount; j++) {
-          const dx = posArray[i * 3] - posArray[j * 3];
-          const dy = posArray[i * 3 + 1] - posArray[j * 3 + 1];
-          const dz = posArray[i * 3 + 2] - posArray[j * 3 + 2];
-          const distSq = dx * dx + dy * dy + dz * dz;
+      // Only update lines if not in anime mode
+      if (!isAnime) {
+        const linePositions = [];
+        const maxDistance = 12;
+        for (let i = 0; i < particlesCount; i += 5) {
+          for (let j = i + 1; j < i + 10 && j < particlesCount; j++) {
+            const dx = posArray[i * 3] - posArray[j * 3];
+            const dy = posArray[i * 3 + 1] - posArray[j * 3 + 1];
+            const dz = posArray[i * 3 + 2] - posArray[j * 3 + 2];
+            const distSq = dx * dx + dy * dy + dz * dz;
 
-          if (distSq < maxDistance * maxDistance) {
-            linePositions.push(
-              posArray[i * 3], posArray[i * 3 + 1], posArray[i * 3 + 2],
-              posArray[j * 3], posArray[j * 3 + 1], posArray[j * 3 + 2]
-            );
+            if (distSq < maxDistance * maxDistance) {
+              linePositions.push(
+                posArray[i * 3], posArray[i * 3 + 1], posArray[i * 3 + 2],
+                posArray[j * 3], posArray[j * 3 + 1], posArray[j * 3 + 2]
+              );
+            }
           }
         }
+        lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+      } else {
+        // Clear lines in anime mode
+        lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute([], 3));
       }
-      lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
 
-      scene.rotation.y = (mouseX * 0.1) + currentRotationY;
-      scene.rotation.x = (-mouseY * 0.1) + currentRotationX;
+      scene.rotation.y = (mouseX * 0.1);
+      scene.rotation.x = (-mouseY * 0.1);
 
       renderer.render(scene, camera);
     };
@@ -192,5 +208,5 @@ export default function ThreeBackground() {
     };
   }, []);
 
-  return <div ref={containerRef} className="fixed inset-0 -z-10 pointer-events-none opacity-90" />;
+  return <div ref={containerRef} className="fixed inset-0 -z-10 pointer-events-none" />;
 }
