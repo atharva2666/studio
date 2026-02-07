@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen bg-background/50 selection:bg-accent selection:text-white transition-colors duration-500 overflow-x-hidden">
+    <main className="relative min-h-screen bg-background/40 selection:bg-accent selection:text-white transition-colors duration-500 overflow-x-hidden">
       <ThreeBackground />
       <Navbar />
       
@@ -20,7 +20,7 @@ export default function Home() {
         <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-to-br from-accent/5 to-transparent blur-[120px] -z-10 rounded-full pointer-events-none" />
         
         <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 relative z-10">
-          <Badge className="mb-8 bg-white/70 backdrop-blur-sm shadow-sm border-primary/10 text-primary px-4 py-1.5 rounded-full font-bold uppercase tracking-[0.25em] text-[10px]">
+          <Badge className="mb-8 bg-white/50 backdrop-blur-sm shadow-sm border-primary/10 text-primary px-4 py-1.5 rounded-full font-bold uppercase tracking-[0.25em] text-[10px]">
             <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-2 inline-block"></span>
             System Online: Intelligent Engineering
           </Badge>
@@ -51,12 +51,12 @@ export default function Home() {
       </section>
 
       {/* Projects Section */}
-      <div id="projects" className="bg-white/30 backdrop-blur-md border-y border-primary/5 relative z-10">
+      <div id="projects" className="bg-white/40 backdrop-blur-md border-y border-primary/5 relative z-10">
         <ProjectShowcase />
       </div>
 
       {/* Terminal Section */}
-      <div id="terminal" className="relative z-20 py-12">
+      <div id="terminal" className="relative z-10 py-12">
         <InteractiveExperience />
       </div>
 
@@ -69,12 +69,12 @@ export default function Home() {
               CODING<br />
               <span className="text-primary italic">AS ART.</span><br />
               <span className="text-accent">ROBOTS</span><br />
-              AS REALITY.
+              <span className="text-foreground">AS REALITY.</span>
             </h2>
           </div>
           
           <div className="relative">
-            <div className="glass-morphism p-12 rounded-[3rem] bg-white/40 border-white/40 shadow-2xl relative z-10 hover:shadow-primary/5 transition-all duration-500">
+            <div className="glass-morphism p-12 rounded-[3rem] bg-white/50 border-white/40 shadow-2xl relative z-10 hover:shadow-primary/5 transition-all duration-500">
               <p className="text-xl md:text-2xl leading-relaxed text-slate-700 mb-12 font-medium">
                 My approach to engineering transcends traditional boundaries. I orchestrate complex systems where digital neurons meet physical actuators, creating life from logic.
               </p>
@@ -94,13 +94,13 @@ export default function Home() {
       </section>
 
       {/* Contact Section */}
-      <div id="contact" className="relative bg-white/10 z-10">
+      <div id="contact" className="relative bg-white/20 z-10">
         <div className="absolute inset-0 bg-primary/[0.01] pointer-events-none" />
         <Contact />
       </div>
 
       {/* Footer */}
-      <footer className="py-24 border-t border-primary/5 text-center bg-white/40 relative z-10">
+      <footer className="py-24 border-t border-primary/5 text-center bg-white/60 relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col items-center gap-8">
             <div className="text-3xl font-headline font-black tracking-tighter flex items-center gap-2">
