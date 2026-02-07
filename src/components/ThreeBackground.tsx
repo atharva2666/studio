@@ -127,34 +127,53 @@ export default function ThreeBackground() {
       particlesGeometry.attributes.size.needsUpdate = true;
     };
 
-    const handleMouseDown = (e: MouseEvent) => {
+    const handleInputStart = (clientX: number, clientY: number) => {
       isDragging = true;
-      lastMouseX = e.clientX;
-      lastMouseY = e.clientY;
+      lastMouseX = clientX;
+      lastMouseY = clientY;
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+    const handleInputMove = (clientX: number, clientY: number) => {
+      mouseX = (clientX / window.innerWidth - 0.5) * 2;
+      mouseY = (clientY / window.innerHeight - 0.5) * 2;
 
       if (isDragging) {
-        const deltaX = e.clientX - lastMouseX;
-        const deltaY = e.clientY - lastMouseY;
+        const deltaX = clientX - lastMouseX;
+        const deltaY = clientY - lastMouseY;
         targetRotationY += deltaX * 0.005;
         targetRotationX += deltaY * 0.005;
-        lastMouseX = e.clientX;
-        lastMouseY = e.clientY;
+        lastMouseX = clientX;
+        lastMouseY = clientY;
       }
     };
 
-    const handleMouseUp = () => {
+    const handleInputEnd = () => {
       isDragging = false;
     };
+
+    const handleMouseDown = (e: MouseEvent) => handleInputStart(e.clientX, e.clientY);
+    const handleMouseMove = (e: MouseEvent) => handleInputMove(e.clientX, e.clientY);
+    const handleMouseUp = () => handleInputEnd();
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        handleInputStart(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    };
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        handleInputMove(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    };
+    const handleTouchEnd = () => handleInputEnd();
 
     window.addEventListener('theme-change', onThemeChange);
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('touchstart', handleTouchStart, { passive: false });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd);
 
     const animate = () => {
       requestAnimationFrame(animate);
@@ -231,6 +250,9 @@ export default function ThreeBackground() {
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
       if (containerRef.current && renderer.domElement) {
         containerRef.current.removeChild(renderer.domElement);
       }
