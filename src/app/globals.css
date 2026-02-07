@@ -38,12 +38,9 @@
     --primary-foreground: 210 40% 98%;
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+    --muted: 240 3.8% 46.1%;
     --accent: 262 83% 58%;
     --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
     --ring: 262 83% 58%;
@@ -71,6 +68,17 @@
     --border: 142 70% 45% / 0.2;
     --particle-color: #22c55e;
   }
+
+  .anime {
+    --background: 280 40% 5%;
+    --foreground: 330 20% 95%;
+    --primary: 330 100% 70%;
+    --primary-foreground: 330 100% 10%;
+    --accent: 190 100% 70%;
+    --card: 280 40% 8%;
+    --border: 330 100% 70% / 0.2;
+    --particle-color: #ff69b4;
+  }
 }
 
 @layer base {
@@ -80,6 +88,10 @@
   body {
     @apply bg-background text-foreground font-body antialiased selection:bg-primary/30 transition-colors duration-500;
   }
+}
+
+.anime .glass-morphism {
+  @apply bg-pink-500/5 backdrop-blur-2xl border-pink-500/20 shadow-[0_0_40px_rgba(255,105,180,0.1)];
 }
 
 .glass-morphism {
@@ -101,4 +113,8 @@
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
+}
+
+.anime .text-gradient {
+  @apply bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400;
 }
