@@ -61,13 +61,19 @@ export default function ProjectShowcase() {
           <div key={idx} className="group relative">
             <Card className="h-full overflow-hidden border-none shadow-none bg-white rounded-[2rem] transition-all duration-500 hover:shadow-[0_40px_80px_-20px_rgba(75,0,130,0.15)] group-hover:-translate-y-3">
               <div className="relative h-72 overflow-hidden">
-                <Image 
-                  src={project.image?.imageUrl || ''} 
-                  alt={project.title}
-                  fill
-                  className="object-cover transition-transform duration-1000 group-hover:scale-110"
-                  data-ai-hint={project.image?.imageHint}
-                />
+                {project.image ? (
+                  <Image 
+                    src={project.image.imageUrl} 
+                    alt={project.title}
+                    fill
+                    className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                    data-ai-hint={project.image.imageHint}
+                  />
+                ) : (
+                  <div className="w-full h-full bg-slate-100 flex items-center justify-center">
+                    <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">Image Unavailable</span>
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-primary/40 transition-colors duration-500" />
                 <div className="absolute top-6 right-6">
                   <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0 cursor-pointer hover:bg-white hover:text-primary">

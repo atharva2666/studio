@@ -3,20 +3,20 @@
   "placeholderImages": [
     {
       "id": "olivia-ai",
-      "description": "Premium AI interface concept showing data nodes and artificial intelligence visualization",
-      "imageUrl": "https://picsum.photos/seed/olivia-ai-viz/800/600",
+      "description": "Abstract neural network and AI interface visualization with glowing data points",
+      "imageUrl": "https://picsum.photos/seed/atharva-ai-brain/800/600",
       "imageHint": "artificial intelligence"
     },
     {
       "id": "ai-testing",
-      "description": "Abstract neural network dashboard and data visualization for AI model testing",
-      "imageUrl": "https://picsum.photos/seed/ai-testing-dash/800/600",
+      "description": "Sophisticated data analytics dashboard with complex graphs and code modules",
+      "imageUrl": "https://picsum.photos/seed/atharva-ai-dash/800/600",
       "imageHint": "data visualization"
     },
     {
       "id": "robotics-project",
-      "description": "High-tech robotic hand or hardware engineering environment",
-      "imageUrl": "https://picsum.photos/seed/robotics-hand/800/600",
+      "description": "Industrial robotic arm performing precision engineering tasks in a high-tech lab",
+      "imageUrl": "https://picsum.photos/seed/atharva-robotics/800/600",
       "imageHint": "robotics technology"
     }
   ]
