@@ -1,13 +1,8 @@
+
 'use client';
 
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-
-/**
- * @fileOverview Enhanced 3D Animated Background
- * Creates a high-visibility "Neural Network" effect with glowing nodes 
- * and interactive connections.
- */
 
 export default function ThreeBackground() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -26,35 +21,33 @@ export default function ThreeBackground() {
     const group = new THREE.Group();
     scene.add(group);
 
-    // --- Nodes ---
-    const particlesCount = 150; // Increased count
+    const particlesCount = 200;
     const positions = new Float32Array(particlesCount * 3);
     const velocities = new Float32Array(particlesCount * 3);
     
     for (let i = 0; i < particlesCount * 3; i++) {
-      positions[i] = (Math.random() - 0.5) * 15;
-      velocities[i] = (Math.random() - 0.5) * 0.008;
+      positions[i] = (Math.random() - 0.5) * 20;
+      velocities[i] = (Math.random() - 0.5) * 0.012;
     }
 
     const particlesGeometry = new THREE.BufferGeometry();
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.08, // Slightly larger
-      color: 0x8b5cf6, // Vibrant Violet
+      size: 0.12,
+      color: 0xa855f7, // Vibrant Purple
       transparent: true,
-      opacity: 0.8, // Increased opacity
+      opacity: 0.9,
       blending: THREE.AdditiveBlending,
     });
 
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     group.add(particlesMesh);
 
-    // --- Connections ---
     const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0x8b5cf6,
+      color: 0xec4899, // Vibrant Pink/Accent
       transparent: true,
-      opacity: 0.25, // Increased line visibility
+      opacity: 0.4,
       blending: THREE.AdditiveBlending,
     });
 
@@ -62,7 +55,7 @@ export default function ThreeBackground() {
     const lineMesh = new THREE.LineSegments(lineGeometry, lineMaterial);
     group.add(lineMesh);
 
-    camera.position.z = 7;
+    camera.position.z = 8;
 
     let mouseX = 0;
     let mouseY = 0;
@@ -87,14 +80,14 @@ export default function ThreeBackground() {
         posArray[iy] += velocities[iy];
         posArray[iz] += velocities[iz];
 
-        if (Math.abs(posArray[ix]) > 10) velocities[ix] *= -1;
-        if (Math.abs(posArray[iy]) > 10) velocities[iy] *= -1;
-        if (Math.abs(posArray[iz]) > 10) velocities[iz] *= -1;
+        if (Math.abs(posArray[ix]) > 12) velocities[ix] *= -1;
+        if (Math.abs(posArray[iy]) > 12) velocities[iy] *= -1;
+        if (Math.abs(posArray[iz]) > 12) velocities[iz] *= -1;
       }
       particlesGeometry.attributes.position.needsUpdate = true;
 
       const linePositions = [];
-      const maxDistance = 2.5;
+      const maxDistance = 3.5;
       for (let i = 0; i < particlesCount; i++) {
         for (let j = i + 1; j < particlesCount; j++) {
           const dx = posArray[i * 3] - posArray[j * 3];
@@ -112,9 +105,9 @@ export default function ThreeBackground() {
       }
       lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
 
-      group.rotation.y += (mouseX * 0.3 - group.rotation.y) * 0.05;
-      group.rotation.x += (-mouseY * 0.3 - group.rotation.x) * 0.05;
-      group.rotation.y += 0.0008;
+      group.rotation.y += (mouseX * 0.4 - group.rotation.y) * 0.05;
+      group.rotation.x += (-mouseY * 0.4 - group.rotation.x) * 0.05;
+      group.rotation.z += 0.001;
 
       renderer.render(scene, camera);
     };
@@ -143,8 +136,8 @@ export default function ThreeBackground() {
   return (
     <div 
       ref={containerRef} 
-      className="fixed inset-0 -z-20 pointer-events-none opacity-90" 
-      style={{ background: 'radial-gradient(circle at center, transparent 0%, rgba(240, 240, 255, 0.4) 100%)' }}
+      className="fixed inset-0 -z-20 pointer-events-none" 
+      style={{ background: 'radial-gradient(circle at center, rgba(20, 0, 40, 0.4) 0%, #05000a 100%)' }}
     />
   );
 }

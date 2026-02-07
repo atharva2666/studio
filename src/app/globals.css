@@ -5,37 +5,26 @@
 
 @layer base {
   :root {
-    --background: 0 0% 96%;
-    --foreground: 275 100% 10%;
-    --card: 0 0% 100%;
-    --card-foreground: 275 100% 15%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 275 100% 15%;
-    --primary: 275 100% 25%;
+    --background: 275 100% 2%;
+    --foreground: 0 0% 100%;
+    --card: 275 100% 4%;
+    --card-foreground: 0 0% 98%;
+    --popover: 275 100% 4%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 275 100% 60%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 274 100% 96%;
-    --secondary-foreground: 275 100% 25%;
-    --muted: 275 10% 90%;
-    --muted-foreground: 275 20% 40%;
-    --accent: 274 100% 50%;
+    --secondary: 275 50% 10%;
+    --secondary-foreground: 275 100% 60%;
+    --muted: 275 30% 15%;
+    --muted-foreground: 275 20% 60%;
+    --accent: 320 100% 60%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 275 20% 90%;
-    --input: 275 20% 90%;
-    --ring: 274 100% 50%;
-    --radius: 1rem;
-  }
-  .dark {
-    --background: 275 50% 5%;
-    --foreground: 0 0% 98%;
-    --card: 275 50% 8%;
-    --card-foreground: 0 0% 98%;
-    --primary: 274 100% 60%;
-    --primary-foreground: 275 100% 5%;
-    --accent: 274 100% 50%;
-    --accent-foreground: 0 0% 98%;
-    --border: 275 30% 20%;
+    --border: 275 30% 15%;
+    --input: 275 30% 15%;
+    --ring: 275 100% 60%;
+    --radius: 1.25rem;
   }
 }
 
@@ -44,15 +33,23 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-body antialiased;
+    @apply bg-background text-foreground font-body antialiased selection:bg-primary/30;
     overflow-x: hidden;
   }
 }
 
 .glass-morphism {
-  @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-xl;
+  @apply bg-black/40 backdrop-blur-xl border border-white/10 shadow-[0_0_40px_-10px_rgba(139,92,246,0.3)];
 }
 
-.hero-gradient {
-  background: radial-gradient(circle at center, hsla(274, 100%, 50%, 0.1) 0%, transparent 70%);
+.neon-glow {
+  text-shadow: 0 0 20px hsla(275, 100%, 60%, 0.5);
+}
+
+.vibrant-gradient {
+  background: linear-gradient(135deg, hsla(275, 100%, 60%, 1) 0%, hsla(320, 100%, 60%, 1) 100%);
+}
+
+.hero-text-glow {
+  @apply drop-shadow-[0_0_30px_rgba(139,92,246,0.5)];
 }

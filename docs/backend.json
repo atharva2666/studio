@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "User": {
@@ -66,6 +67,18 @@
         "link",
         "userId"
       ]
+    },
+    "Message": {
+      "title": "Message",
+      "type": "object",
+      "description": "A direct message sent from a visitor via the website form.",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "text": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email", "text"]
     }
   },
   "auth": {
@@ -83,13 +96,7 @@
           "schema": {
             "$ref": "#/backend/entities/User"
           },
-          "description": "Stores user profiles. Path-based ownership ensures only the authenticated user can access their own profile.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user."
-            }
-          ]
+          "description": "Stores user profiles."
         }
       },
       {
@@ -99,20 +106,19 @@
           "schema": {
             "$ref": "#/backend/entities/Project"
           },
-          "description": "Stores projects associated with each user.  Authorization Independence is achieved without denormalization because the user's projects are located under the user document.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user."
-            },
-            {
-              "name": "projectId",
-              "description": "The unique identifier of the project."
-            }
-          ]
+          "description": "Stores projects associated with each user."
+        }
+      },
+      {
+        "path": "/messages/{messageId}",
+        "definition": {
+          "entityName": "Message",
+          "schema": {
+            "$ref": "#/backend/entities/Message"
+          },
+          "description": "Public submission for direct messaging."
         }
       }
-    ],
-    "reasoning": "The Firestore data structure is designed to support a portfolio application for Atharva.AI, focusing on showcasing projects and providing contact information.  The structure emphasizes authorization independence and secure data access.\n\n1.  **Users Collection:** `/users/{userId}` stores user profiles. This collection utilizes path-based ownership for user-specific data, aligning with the 'Private Data' access model.  This is crucial for security rules: only the authenticated user can access their own profile.\n\n2.  **Projects Collection:** `/users/{userId}/projects/{projectId}` stores projects associated with each user. This structure implements a hierarchical path for user-owned data (User 1:N Project relationship). Authorization Independence is achieved intrinsically: security rules can easily enforce that only the user owning the `/users/{userId}` document can create, read, update, or delete projects within that path.\n\nThe design explicitly avoids hierarchical authorization dependencies by structuring the data to support simple, direct security rules based on path and authentication. Rules can avoid `get()` calls, which are known to break atomic operations and increase complexity.\n\nThe structure supports the required QAPs:\n\n*   Secure `list` operations are enabled through structural segregation.  Listing projects is restricted to the owning user via the path `/users/{userId}/projects`.  A malicious user cannot list all projects; they are limited to the projects under their own user ID.\n\n*   Radical consistency in naming conventions (e.g., `userId`, `projectId`) and schema definitions promotes maintainability and reduces errors."
+    ]
   }
 }

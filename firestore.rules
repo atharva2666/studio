@@ -1,82 +1,30 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    /**
-     * ATHARVA.AI SECURITY RULES (PROTOTYPING MODE)
-     *
-     * Core Philosophy:
-     * This ruleset implements a strict hierarchical ownership model. All application data is
-     * organized under a root /users/{userId} path, ensuring that users can only access and
-     * manage data that belongs specifically to them.
-     *
-     * Data Structure:
-     * - /users/{userId}: Private user profiles.
-     * - /users/{userId}/projects/{projectId}: User-owned projects.
-     *
-     * Key Security Decisions:
-     * 1. Path-Based Authorization: Authorization is derived directly from the document path.
-     *    By nesting projects under the user document, we avoid complex and expensive get()
-     *    calls for permission checks.
-     * 2. Identity Verification: All write operations are strictly tied to the Firebase Auth
-     *    UID (request.auth.uid).
-     * 3. Relational Integrity: On creation and update, the rules enforce that internal
-     *    ownership fields (like userId or id) remain consistent with the document's path.
-     * 4. Denormalization for Authorization: Ownership IDs are enforced within documents
-     *    to ensure fast, local validation without cross-document lookups.
-     *
-     * Flexible Schema Policy:
-     * While ownership and relational integrity are strictly enforced, the rules do not
-     * validate the specific types or presence of content fields (e.g., project titles,
-     * descriptions). This allows for rapid UI/UX iteration during the prototyping phase.
-     */
-
-    // --- GLOBAL HELPER FUNCTIONS ---
-
-    /** Checks if the request is made by a signed-in user. */
     function isSignedIn() {
       return request.auth != null;
     }
-
-    /** Checks if the signed-in user's UID matches the provided userId. */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    /** Checks if the user is the owner and the document exists (for updates/deletes). */
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource != null;
-    }
-
-    // --- COLLECTION RULES ---
-
-    /**
-     * @description Rules for the User profile collection. Only the user themselves can read or modify their profile.
-     * @path /users/{userId}
-     * @allow (get) If the user is authenticated and userId matches request.auth.uid.
-     * @deny (list) If a user tries to list all user profiles.
-     * @principle Restricts access to a user's own data tree and enforces path consistency.
-     */
     match /users/{userId} {
       allow get, list: if isOwner(userId);
-      allow create: if isOwner(userId) && request.resource.data.id == userId;
-      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
-      allow delete: if isExistingOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
 
-      /**
-       * @description Rules for projects belonging to a user. This subcollection inherits the ownership logic of the parent user.
-       * @path /users/{userId}/projects/{projectId}
-       * @allow (create) If user owns the parent path and data.userId matches the path.
-       * @deny (update) If user attempts to change the userId field (relational immutability).
-       * @principle Hierarchical path-based ownership for subcollections.
-       */
       match /projects/{projectId} {
         allow get, list: if isOwner(userId);
-        allow create: if isOwner(userId) && request.resource.data.userId == userId && request.resource.data.id == projectId;
-        allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId && request.resource.data.id == resource.data.id;
-        allow delete: if isExistingOwner(userId);
+        allow create, update, delete: if isOwner(userId);
       }
     }
 
+    match /messages/{messageId} {
+      // Allow anyone to send a message (public write)
+      allow create: if true;
+      // Only the site admin (you) should be able to read them (manually via console for now)
+      allow read: if false; 
+    }
   }
 }
