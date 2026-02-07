@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -70,12 +71,12 @@
   }
 
   .anime {
-    --background: 280 60% 4%;
+    --background: 330 60% 4%;
     --foreground: 330 100% 95%;
     --primary: 330 100% 75%;
     --primary-foreground: 330 100% 10%;
     --accent: 190 100% 70%;
-    --card: 280 60% 7%;
+    --card: 330 60% 7%;
     --border: 330 100% 75% / 0.3;
     --particle-color: #ff69b4;
     --radius: 2rem;
@@ -91,6 +92,14 @@
   }
 }
 
+.anime-only {
+  display: none;
+}
+
+.anime .anime-only {
+  display: block;
+}
+
 .glass-morphism {
   @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.3)];
 }
@@ -100,7 +109,7 @@
 }
 
 .anime .glass-morphism {
-  @apply bg-pink-500/[0.08] backdrop-blur-3xl border-pink-500/30 shadow-[0_0_50px_rgba(255,105,180,0.2)];
+  @apply bg-pink-500/[0.12] backdrop-blur-3xl border-pink-500/40 shadow-[0_0_50px_rgba(255,105,180,0.25)];
 }
 
 .text-gradient {
@@ -121,14 +130,29 @@
   animation: float 8s ease-in-out infinite;
 }
 
-.anime .animate-in {
-  @apply transition-all duration-1000 scale-100;
-  filter: drop-shadow(0 0 15px rgba(255,105,180,0.3));
+/* Sakura Petal Animation */
+.sakura-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.sakura-petal {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  background: #ffb7c5;
+  border-radius: 100% 0 100% 0;
+  opacity: 0.6;
+  animation: sakura-fall linear infinite;
+  box-shadow: 0 0 10px rgba(255, 183, 197, 0.5);
 }
 
 @keyframes sakura-fall {
   0% { transform: translateY(-10%) rotate(0deg); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translateY(110%) rotate(360deg); opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.8; }
+  100% { transform: translateY(110vh) rotate(360deg) translateX(100px); opacity: 0; }
 }

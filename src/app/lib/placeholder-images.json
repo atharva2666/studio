@@ -18,6 +18,18 @@
       "description": "Industrial robotic arm performing precision engineering tasks in a high-tech lab",
       "imageUrl": "https://picsum.photos/seed/atharva-robotics/800/600",
       "imageHint": "robotics technology"
+    },
+    {
+      "id": "anime-character-1",
+      "description": "Stylish anime character with futuristic gear",
+      "imageUrl": "https://picsum.photos/seed/anime-girl-cyber/600/800",
+      "imageHint": "anime girl"
+    },
+    {
+      "id": "anime-character-2",
+      "description": "Dynamic anime male character in a tech setting",
+      "imageUrl": "https://picsum.photos/seed/anime-boy-tech/600/800",
+      "imageHint": "anime boy"
     }
   ]
 }

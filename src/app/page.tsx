@@ -1,3 +1,4 @@
+
 'use client';
 
 import Navbar from '@/components/Navbar';
@@ -7,6 +8,7 @@ import ProjectShowcase from '@/components/ProjectShowcase';
 import InteractiveExperience from '@/components/InteractiveExperience';
 import Contact from '@/components/Contact';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
+import AnimeOverlay from '@/components/AnimeOverlay';
 import { Badge } from '@/components/ui/badge';
 import { Cpu, ArrowDown, Sparkles } from 'lucide-react';
 
@@ -16,6 +18,9 @@ export default function Home() {
       {/* Interactive Background */}
       <ThreeBackground />
       
+      {/* Anime Theme Specialized Overlays */}
+      <AnimeOverlay />
+      
       <Navbar />
       
       {/* Hero Section */}
@@ -23,13 +28,14 @@ export default function Home() {
         <div className="animate-in fade-in slide-in-from-bottom-12 duration-1000">
           <Badge className="mb-10 bg-primary/10 text-primary border-primary/20 px-6 py-2 rounded-full font-bold tracking-[0.4em] text-[10px] flex w-fit items-center gap-3 backdrop-blur-md animate-float">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-            <Sparkles className="w-3 h-3 hidden anime:block" />
-            NEURAL ENGINE ACTIVE
+            <Sparkles className="w-3 h-3 anime:inline-block hidden" />
+            <span className="anime:hidden">NEURAL ENGINE ACTIVE</span>
+            <span className="anime:inline hidden">ANIME PROTOCOL ENGAGED</span>
           </Badge>
           
           <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-[9rem] font-headline font-black leading-[0.9] tracking-tighter mb-14 text-gradient">
             Building<br />
-            The Future<br />
+            <span className="anime:text-accent transition-colors duration-700">The Future</span><br />
             <span className="text-primary/70 italic">Today.</span>
           </h1>
           
