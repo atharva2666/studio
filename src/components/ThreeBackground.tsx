@@ -216,15 +216,22 @@ export default function ThreeBackground() {
         const maxDistance = 10;
         for (let i = 0; i < particlesCount; i += 10) {
           for (let j = i + 1; j < i + 20 && j < particlesCount; j++) {
-            const dx = posArray[i * 3] - posArray[j * 3];
-            const dy = posArray[i * 3 + 1] - posArray[j * 3 + 1];
-            const dz = posArray[i * 3 + 2] - posArray[j * 3 + 2];
+            const ix = i * 3;
+            const iy = i * 3 + 1;
+            const iz = i * 3 + 2;
+            const jx = j * 3;
+            const jy = j * 3 + 1;
+            const jz = j * 3 + 2;
+
+            const dx = posArray[ix] - posArray[jx];
+            const dy = posArray[iy] - posArray[jy];
+            const dz = posArray[iz] - posArray[jz];
             const distSq = dx * dx + dy * dy + dz * dz;
 
             if (distSq < maxDistance * maxDistance) {
               linePositions.push(
                 posArray[ix], posArray[iy], posArray[iz],
-                posArray[j * 3], posArray[j * 3 + 1], posArray[j * 3 + 2]
+                posArray[jx], posArray[jy], posArray[jz]
               );
             }
           }
