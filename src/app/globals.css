@@ -11,20 +11,20 @@
     --card-foreground: 0 0% 98%;
     --popover: 275 100% 4%;
     --popover-foreground: 0 0% 98%;
-    --primary: 275 100% 60%;
+    --primary: 275 100% 65%;
     --primary-foreground: 0 0% 100%;
     --secondary: 275 50% 10%;
-    --secondary-foreground: 275 100% 60%;
+    --secondary-foreground: 275 100% 65%;
     --muted: 275 30% 15%;
-    --muted-foreground: 275 20% 60%;
-    --accent: 320 100% 60%;
+    --muted-foreground: 275 20% 70%;
+    --accent: 325 100% 60%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 275 30% 15%;
     --input: 275 30% 15%;
-    --ring: 275 100% 60%;
-    --radius: 1.25rem;
+    --ring: 275 100% 65%;
+    --radius: 1.5rem;
   }
 }
 
@@ -33,23 +33,32 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-body antialiased selection:bg-primary/30;
+    @apply bg-background text-foreground font-body antialiased selection:bg-primary/40;
     overflow-x: hidden;
   }
 }
 
 .glass-morphism {
-  @apply bg-black/40 backdrop-blur-xl border border-white/10 shadow-[0_0_40px_-10px_rgba(139,92,246,0.3)];
+  @apply bg-black/50 backdrop-blur-2xl border border-white/10 shadow-[0_0_50px_-10px_rgba(168,85,247,0.4)];
 }
 
 .neon-glow {
-  text-shadow: 0 0 20px hsla(275, 100%, 60%, 0.5);
+  text-shadow: 0 0 30px hsla(275, 100%, 65%, 0.6);
 }
 
 .vibrant-gradient {
-  background: linear-gradient(135deg, hsla(275, 100%, 60%, 1) 0%, hsla(320, 100%, 60%, 1) 100%);
+  background: linear-gradient(135deg, hsla(275, 100% , 65%, 1) 0%, hsla(325, 100%, 60%, 1) 100%);
 }
 
 .hero-text-glow {
-  @apply drop-shadow-[0_0_30px_rgba(139,92,246,0.5)];
+  @apply drop-shadow-[0_0_40px_rgba(168,85,247,0.6)];
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-30px); }
+}
+
+.animate-float {
+  animation: float 8s ease-in-out infinite;
 }

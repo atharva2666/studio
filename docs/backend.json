@@ -74,11 +74,10 @@
       "description": "A direct message sent from a visitor via the website form.",
       "properties": {
         "name": { "type": "string" },
-        "email": { "type": "string" },
         "text": { "type": "string" },
         "timestamp": { "type": "string", "format": "date-time" }
       },
-      "required": ["name", "email", "text"]
+      "required": ["name", "text"]
     }
   },
   "auth": {
