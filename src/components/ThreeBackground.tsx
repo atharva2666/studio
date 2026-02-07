@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useRef } from 'react';
@@ -13,12 +14,12 @@ export default function ThreeBackground() {
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ 
       alpha: true, 
-      antialias: false, 
+      antialias: true, 
       powerPreference: "high-performance" 
     });
     
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.2)); 
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
     containerRef.current.appendChild(renderer.domElement);
 
     const getThemeConfig = () => {
@@ -33,7 +34,8 @@ export default function ThreeBackground() {
 
     let { color: themeColor, isAnime } = getThemeConfig();
 
-    const particlesCount = isAnime ? 1200 : 800; 
+    // Particle Setup
+    const particlesCount = isAnime ? 2000 : 1000; 
     const positions = new Float32Array(particlesCount * 3);
     const velocities = new Float32Array(particlesCount * 3);
     const colors = new Float32Array(particlesCount * 3);
@@ -42,19 +44,20 @@ export default function ThreeBackground() {
 
     const resetParticle = (i: number, initial = false) => {
       const ix = i * 3;
-      positions[ix] = (Math.random() - 0.5) * 160;
-      positions[ix + 1] = initial ? (Math.random() - 0.5) * 140 : 80;
-      positions[ix + 2] = (Math.random() - 0.5) * 160;
+      positions[ix] = (Math.random() - 0.5) * 200;
+      positions[ix + 1] = initial ? (Math.random() - 0.5) * 150 : 100;
+      positions[ix + 2] = (Math.random() - 0.5) * 200;
       
-      velocities[ix] = (Math.random() - 0.5) * 0.04;
-      velocities[ix + 1] = -(0.04 + Math.random() * 0.12); 
-      velocities[ix + 2] = (Math.random() - 0.5) * 0.04;
+      // Drift velocity
+      velocities[ix] = (Math.random() - 0.5) * 0.05;
+      velocities[ix + 1] = -(0.05 + Math.random() * 0.15); 
+      velocities[ix + 2] = (Math.random() - 0.5) * 0.05;
 
       colors[ix] = themeColor.r;
       colors[ix + 1] = themeColor.g;
       colors[ix + 2] = themeColor.b;
       
-      sizes[i] = isAnime ? Math.random() * 4.5 + 2.0 : 0.6; 
+      sizes[i] = isAnime ? Math.random() * 5 + 2 : 0.8; 
       flutter[i] = Math.random() * Math.PI * 2;
     };
 
@@ -68,10 +71,10 @@ export default function ThreeBackground() {
     particlesGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 1.2,
+      size: 1.5,
       vertexColors: true,
       transparent: true,
-      opacity: 0.85,
+      opacity: 0.8,
       blending: THREE.AdditiveBlending,
       sizeAttenuation: true
     });
@@ -79,18 +82,20 @@ export default function ThreeBackground() {
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particlesMesh);
 
+    // Constellation setup (Non-anime only)
     const lineMaterial = new THREE.LineBasicMaterial({
       color: themeColor,
       transparent: true,
-      opacity: 0.15,
+      opacity: 0.1,
       blending: THREE.AdditiveBlending,
     });
     const lineGeometry = new THREE.BufferGeometry();
     const lineMesh = new THREE.LineSegments(lineGeometry, lineMaterial);
-    scene.add(lineMesh);
+    if (!isAnime) scene.add(lineMesh);
 
-    camera.position.z = 90;
+    camera.position.z = 100;
 
+    // Interaction State
     let mouseX = 0;
     let mouseY = 0;
     let targetRotationX = 0;
@@ -107,7 +112,12 @@ export default function ThreeBackground() {
       isAnime = config.isAnime;
       
       lineMaterial.color = themeColor;
-      lineMaterial.opacity = isAnime ? 0 : 0.15;
+      
+      if (isAnime) {
+        scene.remove(lineMesh);
+      } else {
+        scene.add(lineMesh);
+      }
       
       const colorArray = particlesGeometry.attributes.color.array as Float32Array;
       const sizeArray = particlesGeometry.attributes.size.array as Float32Array;
@@ -115,7 +125,7 @@ export default function ThreeBackground() {
         colorArray[i * 3] = themeColor.r;
         colorArray[i * 3 + 1] = themeColor.g;
         colorArray[i * 3 + 2] = themeColor.b;
-        sizeArray[i] = isAnime ? Math.random() * 4.5 + 2.0 : 0.6;
+        sizeArray[i] = isAnime ? Math.random() * 5 + 2 : 0.8;
       }
       particlesGeometry.attributes.color.needsUpdate = true;
       particlesGeometry.attributes.size.needsUpdate = true;
@@ -131,8 +141,8 @@ export default function ThreeBackground() {
       if (isDragging) {
         const deltaX = e.clientX - lastMouseX;
         const deltaY = e.clientY - lastMouseY;
-        targetRotationY += deltaX * 0.004;
-        targetRotationX += deltaY * 0.004;
+        targetRotationY += deltaX * 0.005;
+        targetRotationX += deltaY * 0.005;
         lastMouseX = e.clientX;
         lastMouseY = e.clientY;
       }
@@ -140,7 +150,9 @@ export default function ThreeBackground() {
       mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
     };
 
-    const handleMouseUp = () => isDragging = false;
+    const handleMouseUp = () => {
+      isDragging = false;
+    };
 
     window.addEventListener('theme-change', onThemeChange);
     window.addEventListener('mousedown', handleMouseDown);
@@ -154,35 +166,32 @@ export default function ThreeBackground() {
 
       for (let i = 0; i < particlesCount; i++) {
         const i3 = i * 3;
-        const ix = i3;
-        const iy = i3 + 1;
-        const iz = i3 + 2;
-
         if (isAnime) {
-          flutter[i] += 0.015;
-          posArray[ix] += Math.sin(flutter[i]) * 0.06 + velocities[ix];
-          posArray[iy] += velocities[iy]; 
-          posArray[iz] += Math.cos(flutter[i]) * 0.06 + velocities[iz];
+          flutter[i] += 0.02;
+          posArray[i3] += Math.sin(flutter[i]) * 0.08 + velocities[i3];
+          posArray[i3 + 1] += velocities[i3 + 1]; 
+          posArray[i3 + 2] += Math.cos(flutter[i]) * 0.08 + velocities[i3 + 2];
 
-          if (posArray[iy] < -90) resetParticle(i);
+          if (posArray[i3 + 1] < -100) resetParticle(i);
         } else {
-          posArray[ix] += velocities[ix] * 0.35;
-          posArray[iy] += velocities[iy] * 0.18;
-          posArray[iz] += velocities[iz] * 0.35;
+          posArray[i3] += velocities[i3] * 0.5;
+          posArray[i3 + 1] += velocities[i3 + 1] * 0.3;
+          posArray[i3 + 2] += velocities[i3 + 2] * 0.5;
 
-          if (posArray[ix] > 90) posArray[ix] = -90;
-          if (posArray[ix] < -90) posArray[ix] = 90;
-          if (posArray[iy] > 90) posArray[iy] = -90;
-          if (posArray[iy] < -90) posArray[iy] = 90;
+          if (posArray[i3] > 100) posArray[i3] = -100;
+          if (posArray[i3] < -100) posArray[i3] = 100;
+          if (posArray[i3 + 1] > 100) posArray[i3 + 1] = -100;
+          if (posArray[i3 + 1] < -100) posArray[i3 + 1] = 100;
         }
       }
       particlesGeometry.attributes.position.needsUpdate = true;
 
+      // Update lines only in non-anime mode
       if (!isAnime) {
         const linePositions = [];
-        const maxDistSq = 169; // 13 units
-        for (let i = 0; i < particlesCount; i += 15) {
-          for (let j = i + 1; j < i + 25 && j < particlesCount; j++) {
+        const maxDistSq = 400; // 20 units
+        for (let i = 0; i < particlesCount; i += 20) {
+          for (let j = i + 1; j < i + 40 && j < particlesCount; j++) {
             const i3 = i * 3;
             const j3 = j * 3;
             const dx = posArray[i3] - posArray[j3];
@@ -199,15 +208,14 @@ export default function ThreeBackground() {
           }
         }
         lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
-      } else {
-        lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute([], 3));
       }
 
-      currentRotationX += (targetRotationX - currentRotationX) * 0.05;
-      currentRotationY += (targetRotationY - currentRotationY) * 0.05;
+      // Smooth rotation
+      currentRotationX += (targetRotationX - currentRotationX) * 0.1;
+      currentRotationY += (targetRotationY - currentRotationY) * 0.1;
 
-      scene.rotation.x = currentRotationX + (mouseY * 0.05);
-      scene.rotation.y = currentRotationY + (mouseX * 0.05);
+      scene.rotation.x = currentRotationX + (mouseY * 0.1);
+      scene.rotation.y = currentRotationY + (mouseX * 0.1);
 
       renderer.render(scene, camera);
     };
@@ -239,5 +247,5 @@ export default function ThreeBackground() {
     };
   }, []);
 
-  return <div ref={containerRef} className="fixed inset-0 -z-10 pointer-events-none" />;
+  return <div ref={containerRef} className="fixed inset-0 -z-10 pointer-events-none cursor-grab active:cursor-grabbing" />;
 }
