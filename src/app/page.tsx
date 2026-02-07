@@ -7,18 +7,13 @@ import ProjectShowcase from '@/components/ProjectShowcase';
 import InteractiveExperience from '@/components/InteractiveExperience';
 import Contact from '@/components/Contact';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
-import AnimeOverlay from '@/components/AnimeOverlay';
-import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { Cpu, ArrowDown, Sparkles } from 'lucide-react';
 
 export default function Home() {
-  const mascotUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqmHoPZmuT_SPf5WUnUHN0cfXHBCGJyAUMGjRb8AugdnDEXQPovm2goyw&s=10";
-
   return (
     <main className="relative min-h-screen selection:bg-primary/30 overflow-x-hidden">
       <ThreeBackground />
-      <AnimeOverlay />
       <Navbar />
       
       <section className="min-h-screen flex flex-col justify-center px-6 md:px-12 max-w-7xl mx-auto pt-32 pb-12 relative z-10 pointer-events-none">
@@ -26,36 +21,17 @@ export default function Home() {
           
           <Badge className="mb-10 bg-primary/10 text-primary border-primary/20 px-6 py-2 rounded-full font-bold tracking-[0.4em] text-[10px] flex w-fit items-center gap-3 backdrop-blur-md animate-float">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-            <Sparkles className="w-3 h-3 hidden anime:inline-block" />
-            <span className="anime:hidden">NEURAL ENGINE ACTIVE</span>
-            <span className="hidden anime:inline">ANIME PROTOCOL ENGAGED</span>
+            <Sparkles className="w-3 h-3" />
+            <span>NEURAL ENGINE ACTIVE</span>
           </Badge>
           
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 lg:gap-16">
             <div className="flex-1">
               <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-[9.5rem] font-headline font-black leading-[0.85] tracking-tighter mb-14 text-gradient">
                 Building<br />
-                <span className="anime:text-accent transition-colors duration-700">The Future</span><br />
+                The Future<br />
                 <span className="text-primary/70 italic">Today.</span>
               </h1>
-            </div>
-
-            <div className="anime-mascot flex flex-col items-center justify-center animate-in zoom-in-75 fade-in duration-1000 delay-300">
-              <div className="relative w-80 h-80 md:w-[450px] md:h-[450px] lg:w-[600px] lg:h-[600px]">
-                <div className="relative w-full h-full animate-float">
-                  <Image
-                    src={mascotUrl}
-                    alt="Anime Mascot Greeting"
-                    fill
-                    unoptimized
-                    className="object-contain filter drop-shadow-[0_0_50px_rgba(255,105,180,0.7)]"
-                    priority
-                  />
-                  <div className="absolute -top-10 -right-4 bg-white/95 backdrop-blur-md px-10 py-5 rounded-[3rem] rounded-bl-none border-4 border-pink-400 shadow-[0_15px_50px_rgba(255,105,180,0.5)] animate-bounce">
-                    <span className="text-pink-600 font-black text-xl tracking-tight whitespace-nowrap">HI MASTER! ^_^</span>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
           
@@ -98,7 +74,7 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-4 group cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <div className="w-12 h-12 rounded-2xl bg-primary/20 border border-primary/40 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+            <div className="w-12 h-12 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
               <Cpu className="w-6 h-6 text-primary" />
             </div>
             <span className="text-2xl font-headline font-black tracking-tighter">
