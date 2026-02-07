@@ -1,3 +1,4 @@
+
 {
   "placeholderImages": [
     {
@@ -20,9 +21,9 @@
     },
     {
       "id": "anime-waving",
-      "description": "High-quality manga-style anime girl waving hi with a cheerful expression",
-      "imageUrl": "https://picsum.photos/seed/waifu-waving-2025/800/800",
-      "imageHint": "anime girl waving"
+      "description": "Premium manga-style anime girl with stylized aesthetic waving hi",
+      "imageUrl": "https://picsum.photos/seed/waifu-premium-2025/800/1000",
+      "imageHint": "anime girl"
     }
   ]
 }

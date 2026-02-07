@@ -1,3 +1,4 @@
+
 'use client';
 
 import Navbar from '@/components/Navbar';
@@ -21,7 +22,7 @@ export default function Home() {
       {/* Interactive Background */}
       <ThreeBackground />
       
-      {/* Anime Theme Specialized Global Effects (Sakura) */}
+      {/* Anime Theme Specialized Global Effects */}
       <AnimeOverlay />
       
       <Navbar />

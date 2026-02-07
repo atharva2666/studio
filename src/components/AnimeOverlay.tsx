@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -11,21 +12,34 @@ interface LeafProps {
 
 export default function AnimeOverlay() {
   const [leaves, setLeaves] = useState<LeafProps[]>([]);
+  const [isAnime, setIsAnime] = useState(false);
 
   useEffect(() => {
-    // Generate leaf properties only on the client to avoid hydration mismatch
-    const generatedLeaves = Array.from({ length: 20 }).map(() => ({
+    // Check theme status and listen for changes
+    const checkTheme = () => {
+      setIsAnime(document.documentElement.classList.contains('anime'));
+    };
+    
+    checkTheme();
+    window.addEventListener('theme-change', checkTheme);
+
+    // Generate leaf properties
+    const generatedLeaves = Array.from({ length: 25 }).map(() => ({
       left: `${Math.random() * 100}vw`,
-      delay: `${Math.random() * 5}s`,
-      duration: `${10 + Math.random() * 15}s`,
-      scale: 0.5 + Math.random() * 0.8,
+      delay: `${Math.random() * 8}s`,
+      duration: `${12 + Math.random() * 18}s`,
+      scale: 0.6 + Math.random() * 1.2,
     }));
     setLeaves(generatedLeaves);
+
+    return () => window.removeEventListener('theme-change', checkTheme);
   }, []);
 
+  if (!isAnime) return null;
+
   return (
-    <div className="anime-only fixed inset-0 pointer-events-none z-40 overflow-hidden">
-      {/* Floating Sakura Petal Effects - Background Atmosphere */}
+    <div className="fixed inset-0 pointer-events-none z-40 overflow-hidden">
+      {/* Floating Sakura Petal Effects */}
       <div className="absolute inset-0">
         {leaves.map((leaf, i) => (
           <div 
