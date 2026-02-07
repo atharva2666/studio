@@ -68,6 +68,28 @@
     --border: 142 70% 45% / 0.2;
     --particle-color: #22c55e;
   }
+
+  .nebula {
+    --background: 280 50% 2%;
+    --foreground: 210 100% 95%;
+    --primary: 280 80% 60%;
+    --primary-foreground: 280 100% 98%;
+    --accent: 200 80% 50%;
+    --card: 280 50% 4%;
+    --border: 280 80% 60% / 0.3;
+    --particle-color: #d8b4fe;
+  }
+
+  .matrix {
+    --background: 120 100% 1%;
+    --foreground: 120 100% 50%;
+    --primary: 120 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --accent: 120 100% 30%;
+    --card: 120 100% 2%;
+    --border: 120 100% 50% / 0.4;
+    --particle-color: #00ff00;
+  }
 }
 
 @layer base {
