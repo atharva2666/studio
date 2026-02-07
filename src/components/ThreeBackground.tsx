@@ -33,8 +33,7 @@ export default function ThreeBackground() {
       const ctx = canvas.getContext('2d')!;
       const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
       gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-      gradient.addColorStop(0.2, 'rgba(255, 255, 255, 0.8)');
-      gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.2)');
+      gradient.addColorStop(0.3, 'rgba(255, 255, 255, 0.4)');
       gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, 64, 64);
@@ -48,13 +47,39 @@ export default function ThreeBackground() {
       const ctx = canvas.getContext('2d')!;
       ctx.fillStyle = 'white';
       ctx.beginPath();
-      // Draw a simple 4-pointed star
-      ctx.moveTo(32, 0);
-      ctx.quadraticCurveTo(32, 32, 64, 32);
-      ctx.quadraticCurveTo(32, 32, 32, 64);
-      ctx.quadraticCurveTo(32, 32, 0, 32);
-      ctx.quadraticCurveTo(32, 32, 32, 0);
+      ctx.moveTo(32, 4);
+      ctx.lineTo(38, 24);
+      ctx.lineTo(60, 24);
+      ctx.lineTo(42, 38);
+      ctx.lineTo(48, 60);
+      ctx.lineTo(32, 48);
+      ctx.lineTo(16, 60);
+      ctx.lineTo(22, 38);
+      ctx.lineTo(4, 24);
+      ctx.lineTo(26, 24);
+      ctx.closePath();
       ctx.fill();
+      return new THREE.CanvasTexture(canvas);
+    };
+
+    const createLeafTexture = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 64;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d')!;
+      ctx.fillStyle = 'white';
+      ctx.beginPath();
+      ctx.moveTo(32, 60);
+      ctx.quadraticCurveTo(10, 40, 32, 4);
+      ctx.quadraticCurveTo(54, 40, 32, 60);
+      ctx.fill();
+      // Stem
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'white';
+      ctx.beginPath();
+      ctx.moveTo(32, 60);
+      ctx.lineTo(32, 64);
+      ctx.stroke();
       return new THREE.CanvasTexture(canvas);
     };
 
@@ -64,17 +89,32 @@ export default function ThreeBackground() {
       canvas.height = 64;
       const ctx = canvas.getContext('2d')!;
       ctx.fillStyle = 'white';
-      ctx.font = 'bold 48px monospace';
+      ctx.font = 'bold 54px monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(Math.random() > 0.5 ? '1' : '0', 32, 32);
       return new THREE.CanvasTexture(canvas);
     };
 
+    const createSquareTexture = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 64;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d')!;
+      ctx.fillStyle = 'white';
+      ctx.fillRect(16, 16, 32, 32);
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(8, 8, 48, 48);
+      return new THREE.CanvasTexture(canvas);
+    };
+
     const textures = {
-      default: createCircleTexture(),
+      circle: createCircleTexture(),
       star: createStarTexture(),
-      matrix: createMatrixTexture()
+      leaf: createLeafTexture(),
+      matrix: createMatrixTexture(),
+      square: createSquareTexture()
     };
 
     const getThemeConfig = () => {
@@ -91,7 +131,7 @@ export default function ThreeBackground() {
     themeRef.current = currentTheme;
 
     // --- Scene Objects ---
-    const particlesCount = 3000;
+    const particlesCount = 2500;
     const posAttr = new THREE.BufferAttribute(new Float32Array(particlesCount * 3), 3);
     const colorAttr = new THREE.BufferAttribute(new Float32Array(particlesCount * 3), 3);
     const velAttr = new Float32Array(particlesCount * 3);
@@ -101,12 +141,12 @@ export default function ThreeBackground() {
     geometry.setAttribute('color', colorAttr);
 
     const material = new THREE.PointsMaterial({
-      size: 4,
+      size: 5,
       vertexColors: true,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.6,
       blending: THREE.AdditiveBlending,
-      map: textures.default,
+      map: textures.circle,
       depthWrite: false
     });
 
@@ -118,45 +158,42 @@ export default function ThreeBackground() {
     const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
     scene.add(lines);
 
-    const specialObjects = new THREE.Group();
-    scene.add(specialObjects);
-
     const initParticles = () => {
       const theme = themeRef.current;
       for (let i = 0; i < particlesCount; i++) {
         const i3 = i * 3;
         
         if (theme === 'matrix') {
-          posAttr.array[i3] = (Math.random() - 0.5) * 800;
+          posAttr.array[i3] = (Math.random() - 0.5) * 1000;
           posAttr.array[i3 + 1] = Math.random() * 1000 - 500;
-          posAttr.array[i3 + 2] = (Math.random() - 0.5) * 800;
-          velAttr[i3 + 1] = -Math.random() * 4 - 2;
+          posAttr.array[i3 + 2] = (Math.random() - 0.5) * 1000;
+          velAttr[i3 + 1] = -Math.random() * 5 - 3;
           velAttr[i3] = 0;
           velAttr[i3 + 2] = 0;
         } else if (theme === 'nebula') {
-          const radius = 300 + Math.random() * 400;
+          const radius = 200 + Math.random() * 600;
           const theta = Math.random() * Math.PI * 2;
           const phi = Math.acos(2 * Math.random() - 1);
           posAttr.array[i3] = radius * Math.sin(phi) * Math.cos(theta);
           posAttr.array[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
           posAttr.array[i3 + 2] = radius * Math.cos(phi);
-          velAttr[i3] = (Math.random() - 0.5) * 0.1;
-          velAttr[i3 + 1] = (Math.random() - 0.5) * 0.1;
-          velAttr[i3 + 2] = (Math.random() - 0.5) * 0.1;
+          velAttr[i3] = (Math.random() - 0.5) * 0.15;
+          velAttr[i3 + 1] = (Math.random() - 0.5) * 0.15;
+          velAttr[i3 + 2] = (Math.random() - 0.5) * 0.15;
         } else if (theme === 'nature') {
-          posAttr.array[i3] = (Math.random() - 0.5) * 600;
-          posAttr.array[i3 + 1] = (Math.random() - 0.5) * 600;
-          posAttr.array[i3 + 2] = (Math.random() - 0.5) * 600;
-          velAttr[i3] = (Math.random() - 0.5) * 0.3;
-          velAttr[i3 + 1] = -0.3 - Math.random() * 0.5;
-          velAttr[i3 + 2] = (Math.random() - 0.5) * 0.2;
+          posAttr.array[i3] = (Math.random() - 0.5) * 800;
+          posAttr.array[i3 + 1] = (Math.random() - 0.5) * 800;
+          posAttr.array[i3 + 2] = (Math.random() - 0.5) * 800;
+          velAttr[i3] = (Math.random() - 0.5) * 0.4;
+          velAttr[i3 + 1] = -0.5 - Math.random() * 1.0;
+          velAttr[i3 + 2] = (Math.random() - 0.5) * 0.4;
         } else {
-          posAttr.array[i3] = (Math.random() - 0.5) * 600;
-          posAttr.array[i3 + 1] = (Math.random() - 0.5) * 600;
-          posAttr.array[i3 + 2] = (Math.random() - 0.5) * 600;
-          velAttr[i3] = (Math.random() - 0.5) * 0.2;
-          velAttr[i3 + 1] = (Math.random() - 0.5) * 0.2;
-          velAttr[i3 + 2] = (Math.random() - 0.5) * 0.2;
+          posAttr.array[i3] = (Math.random() - 0.5) * 700;
+          posAttr.array[i3 + 1] = (Math.random() - 0.5) * 700;
+          posAttr.array[i3 + 2] = (Math.random() - 0.5) * 700;
+          velAttr[i3] = (Math.random() - 0.5) * 0.25;
+          velAttr[i3 + 1] = (Math.random() - 0.5) * 0.25;
+          velAttr[i3 + 2] = (Math.random() - 0.5) * 0.25;
         }
 
         colorAttr.array[i3] = themeColor.r;
@@ -175,8 +212,8 @@ export default function ThreeBackground() {
     let isDragging = false;
     let previousX = 0;
     let previousY = 0;
-    let initialPinchDistance = 0;
-    let zoomLevel = 450;
+    let initialPinchDistance = null;
+    let zoomLevel = 500;
 
     const handleMouseDown = (e: MouseEvent) => {
       isDragging = true;
@@ -217,19 +254,19 @@ export default function ThreeBackground() {
         targetRotationX += deltaY * 0.008;
         previousX = e.touches[0].clientX;
         previousY = e.touches[0].clientY;
-      } else if (e.touches.length === 2) {
+      } else if (e.touches.length === 2 && initialPinchDistance !== null) {
         const currentDistance = Math.hypot(
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY
         );
         const delta = currentDistance - initialPinchDistance;
-        zoomLevel = Math.max(100, Math.min(1000, zoomLevel - delta * 1.5));
+        zoomLevel = Math.max(100, Math.min(1200, zoomLevel - delta * 2));
         initialPinchDistance = currentDistance;
       }
     };
 
     const handleWheel = (e: WheelEvent) => {
-      zoomLevel = Math.max(100, Math.min(1000, zoomLevel + e.deltaY * 0.5));
+      zoomLevel = Math.max(100, Math.min(1200, zoomLevel + e.deltaY * 0.5));
     };
 
     window.addEventListener('mousedown', handleMouseDown);
@@ -237,7 +274,7 @@ export default function ThreeBackground() {
     window.addEventListener('mouseup', handleMouseUp);
     window.addEventListener('touchstart', handleTouchStart);
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
-    window.addEventListener('touchend', handleMouseUp);
+    window.addEventListener('touchend', () => { isDragging = false; initialPinchDistance = null; });
     window.addEventListener('wheel', handleWheel);
 
     const onThemeChange = () => {
@@ -247,16 +284,29 @@ export default function ThreeBackground() {
       
       lineMaterial.color = themeColor;
       
-      // Assign correct texture map
-      if (themeRef.current === 'matrix') {
-        material.map = textures.matrix;
-        material.size = 12;
-      } else if (themeRef.current === 'nebula') {
-        material.map = textures.star;
-        material.size = 8;
-      } else {
-        material.map = textures.default;
-        material.size = 5;
+      // Update textures based on theme
+      switch(themeRef.current) {
+        case 'matrix':
+          material.map = textures.matrix;
+          material.size = 14;
+          break;
+        case 'nature':
+          material.map = textures.leaf;
+          material.size = 10;
+          break;
+        case 'nebula':
+          material.map = textures.star;
+          material.size = 8;
+          break;
+        case 'cyber':
+          material.map = textures.square;
+          material.size = 8;
+          break;
+        case 'light':
+        case 'dark':
+        default:
+          material.map = textures.circle;
+          material.size = 6;
       }
       material.needsUpdate = true;
 
@@ -268,23 +318,6 @@ export default function ThreeBackground() {
       }
       colorAttr.needsUpdate = true;
       initParticles();
-
-      // Setup special objects for themes
-      while(specialObjects.children.length > 0) specialObjects.remove(specialObjects.children[0]);
-
-      if (themeRef.current === 'cyber') {
-        const grid = new THREE.GridHelper(800, 40, themeColor, themeColor);
-        grid.position.y = -200;
-        grid.material.transparent = true;
-        grid.material.opacity = 0.2;
-        specialObjects.add(grid);
-      } else if (themeRef.current === 'matrix') {
-        const floor = new THREE.GridHelper(1200, 60, themeColor, themeColor);
-        floor.position.y = -400;
-        floor.material.transparent = true;
-        floor.material.opacity = 0.1;
-        specialObjects.add(floor);
-      }
     };
 
     window.addEventListener('theme-change', onThemeChange);
@@ -303,19 +336,19 @@ export default function ThreeBackground() {
           positions[i3 + 1] += velAttr[i3 + 1];
           if (positions[i3 + 1] < -500) {
             positions[i3 + 1] = 500;
-            positions[i3] = (Math.random() - 0.5) * 800;
+            positions[i3] = (Math.random() - 0.5) * 1000;
           }
         } else if (theme === 'nature') {
-          positions[i3] += velAttr[i3] + Math.sin(Date.now() * 0.001 + i) * 0.2;
+          positions[i3] += velAttr[i3] + Math.sin(Date.now() * 0.001 + i) * 0.3;
           positions[i3 + 1] += velAttr[i3 + 1];
           positions[i3 + 2] += velAttr[i3 + 2];
           if (positions[i3 + 1] < -400) {
              positions[i3 + 1] = 400;
-             positions[i3] = (Math.random() - 0.5) * 600;
+             positions[i3] = (Math.random() - 0.5) * 800;
           }
         } else if (theme === 'nebula') {
-          positions[i3] += velAttr[i3] + Math.sin(Date.now() * 0.0005 + i) * 0.1;
-          positions[i3 + 1] += velAttr[i3 + 1];
+          positions[i3] += velAttr[i3] + Math.cos(Date.now() * 0.0005 + i) * 0.15;
+          positions[i3 + 1] += velAttr[i3 + 1] + Math.sin(Date.now() * 0.0005 + i) * 0.15;
           positions[i3 + 2] += velAttr[i3 + 2];
         } else {
           positions[i3] += velAttr[i3];
@@ -329,12 +362,13 @@ export default function ThreeBackground() {
       }
       posAttr.needsUpdate = true;
 
-      if (theme === 'dark' || theme === 'light' || theme === 'nebula') {
+      // Connections logic for specific themes
+      if (theme === 'dark' || theme === 'light') {
         const linePos = [];
-        const limit = 20;
-        const maxDist = 50;
-        for (let i = 0; i < particlesCount; i += limit) {
-          for (let j = i + limit; j < i + (limit * 2) && j < particlesCount; j += limit) {
+        const skip = 30; // performance skip
+        const maxDist = 60;
+        for (let i = 0; i < particlesCount; i += skip) {
+          for (let j = i + skip; j < i + (skip * 2) && j < particlesCount; j += skip) {
             const i3 = i * 3, j3 = j * 3;
             const dist = Math.hypot(positions[i3]-positions[j3], positions[i3+1]-positions[j3+1], positions[i3+2]-positions[j3+2]);
             if (dist < maxDist) {
@@ -348,13 +382,13 @@ export default function ThreeBackground() {
         lines.visible = false;
       }
 
-      currentRotationX += (targetRotationX - currentRotationX) * 0.05;
-      currentRotationY += (targetRotationY - currentRotationY) * 0.05;
+      currentRotationX += (targetRotationX - currentRotationX) * 0.08;
+      currentRotationY += (targetRotationY - currentRotationY) * 0.08;
       
       scene.rotation.x = currentRotationX;
       scene.rotation.y = currentRotationY;
       
-      targetRotationY += 0.001;
+      targetRotationY += 0.001; // subtle auto-rotation
       camera.position.z += (zoomLevel - camera.position.z) * 0.1;
 
       renderer.render(scene, camera);
@@ -378,7 +412,6 @@ export default function ThreeBackground() {
       window.removeEventListener('mouseup', handleMouseUp);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', handleMouseUp);
       window.removeEventListener('wheel', handleWheel);
       renderer.dispose();
     };
