@@ -17,19 +17,33 @@ export default function ThreeBackground() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     containerRef.current.appendChild(renderer.domElement);
 
-    // Neural Constellation Configuration
-    const particlesCount = 450;
+    // Enhanced Constellation Config
+    const particlesCount = 600;
     const positions = new Float32Array(particlesCount * 3);
     const velocities = new Float32Array(particlesCount * 3);
     const colors = new Float32Array(particlesCount * 3);
     
-    for (let i = 0; i < particlesCount * 3; i++) {
-      positions[i] = (Math.random() - 0.5) * 50;
-      velocities[i] = (Math.random() - 0.5) * 0.005;
-      // Initialize with soft lavender/purple
-      if (i % 3 === 0) colors[i] = 0.66; // R
-      if (i % 3 === 1) colors[i] = 0.33; // G
-      if (i % 3 === 2) colors[i] = 0.93; // B
+    const getThemeColor = () => {
+      const styles = getComputedStyle(document.documentElement);
+      const colorHex = styles.getPropertyValue('--particle-color').trim();
+      return new THREE.Color(colorHex || '#a855f7');
+    };
+
+    let themeColor = getThemeColor();
+
+    for (let i = 0; i < particlesCount; i++) {
+      const ix = i * 3;
+      positions[ix] = (Math.random() - 0.5) * 60;
+      positions[ix + 1] = (Math.random() - 0.5) * 60;
+      positions[ix + 2] = (Math.random() - 0.5) * 60;
+      
+      velocities[ix] = (Math.random() - 0.5) * 0.01;
+      velocities[ix + 1] = (Math.random() - 0.5) * 0.01;
+      velocities[ix + 2] = (Math.random() - 0.5) * 0.01;
+
+      colors[ix] = themeColor.r;
+      colors[ix + 1] = themeColor.g;
+      colors[ix + 2] = themeColor.b;
     }
 
     const particlesGeometry = new THREE.BufferGeometry();
@@ -37,10 +51,10 @@ export default function ThreeBackground() {
     particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.12,
+      size: 0.25,
       vertexColors: true,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.9,
       blending: THREE.AdditiveBlending,
       sizeAttenuation: true
     });
@@ -49,9 +63,9 @@ export default function ThreeBackground() {
     scene.add(particlesMesh);
 
     const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0xa855f7,
+      color: themeColor,
       transparent: true,
-      opacity: 0.1,
+      opacity: 0.3,
       blending: THREE.AdditiveBlending,
     });
 
@@ -59,7 +73,7 @@ export default function ThreeBackground() {
     const lineMesh = new THREE.LineSegments(lineGeometry, lineMaterial);
     scene.add(lineMesh);
 
-    camera.position.z = 20;
+    camera.position.z = 25;
 
     // Interaction State
     let mouseX = 0;
@@ -74,17 +88,6 @@ export default function ThreeBackground() {
     
     let isTwoFingerDragging = false;
     let lastTouchPosition = { x: 0, y: 0 };
-
-    // Pulse Logic
-    let pulseActive = false;
-    let pulseStrength = 0;
-
-    const handlePulse = () => {
-      pulseActive = true;
-      pulseStrength = 1.0;
-    };
-
-    window.addEventListener('neural-pulse', handlePulse);
 
     const handleMouseMove = (event: MouseEvent) => {
       mouseX = (event.clientX / window.innerWidth - 0.5) * 2;
@@ -139,15 +142,26 @@ export default function ThreeBackground() {
       isTwoFingerDragging = false;
     };
 
-    const preventDefault = (e: Event) => e.preventDefault();
+    const onThemeChange = () => {
+      themeColor = getThemeColor();
+      lineMaterial.color = themeColor;
+      const colorArray = particlesGeometry.attributes.color.array as Float32Array;
+      for (let i = 0; i < particlesCount; i++) {
+        colorArray[i * 3] = themeColor.r;
+        colorArray[i * 3 + 1] = themeColor.g;
+        colorArray[i * 3 + 2] = themeColor.b;
+      }
+      particlesGeometry.attributes.color.needsUpdate = true;
+    };
 
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
-    window.addEventListener('contextmenu', preventDefault);
+    window.addEventListener('contextmenu', (e) => e.preventDefault());
     window.addEventListener('touchstart', handleTouchStart);
     window.addEventListener('touchmove', handleTouchMove);
     window.addEventListener('touchend', handleTouchEnd);
+    window.addEventListener('theme-change', onThemeChange);
 
     const animate = () => {
       requestAnimationFrame(animate);
@@ -156,40 +170,26 @@ export default function ThreeBackground() {
       currentRotationY += (targetRotationY - currentRotationY) * 0.1;
 
       const posArray = particlesGeometry.attributes.position.array as Float32Array;
-      const colorArray = particlesGeometry.attributes.color.array as Float32Array;
-
-      if (pulseActive) {
-        pulseStrength *= 0.95;
-        if (pulseStrength < 0.01) pulseActive = false;
-      }
 
       for (let i = 0; i < particlesCount; i++) {
         const ix = i * 3;
         const iy = i * 3 + 1;
         const iz = i * 3 + 2;
 
-        posArray[ix] += velocities[ix] * (pulseActive ? 10 * pulseStrength : 1);
-        posArray[iy] += velocities[iy] * (pulseActive ? 10 * pulseStrength : 1);
-        posArray[iz] += velocities[iz] * (pulseActive ? 10 * pulseStrength : 1);
+        posArray[ix] += velocities[ix];
+        posArray[iy] += velocities[iy];
+        posArray[iz] += velocities[iz];
 
-        // Dynamic coloring based on movement and pulse
-        if (pulseActive) {
-          colorArray[ix] = Math.min(1, colorArray[ix] + pulseStrength * 0.1);
-          colorArray[iy] = Math.max(0, colorArray[iy] - pulseStrength * 0.1);
-          colorArray[iz] = 1;
-        }
-
-        if (Math.abs(posArray[ix]) > 30) velocities[ix] *= -1;
-        if (Math.abs(posArray[iy]) > 30) velocities[iy] *= -1;
-        if (Math.abs(posArray[iz]) > 30) velocities[iz] *= -1;
+        if (Math.abs(posArray[ix]) > 40) velocities[ix] *= -1;
+        if (Math.abs(posArray[iy]) > 40) velocities[iy] *= -1;
+        if (Math.abs(posArray[iz]) > 40) velocities[iz] *= -1;
       }
       particlesGeometry.attributes.position.needsUpdate = true;
-      particlesGeometry.attributes.color.needsUpdate = true;
 
       const linePositions = [];
-      const maxDistance = 8;
-      for (let i = 0; i < particlesCount; i += 3) {
-        for (let j = i + 1; j < particlesCount; j += 6) {
+      const maxDistance = 10;
+      for (let i = 0; i < particlesCount; i += 4) {
+        for (let j = i + 1; j < i + 12 && j < particlesCount; j++) {
           const dx = posArray[i * 3] - posArray[j * 3];
           const dy = posArray[i * 3 + 1] - posArray[j * 3 + 1];
           const dz = posArray[i * 3 + 2] - posArray[j * 3 + 2];
@@ -205,8 +205,8 @@ export default function ThreeBackground() {
       }
       lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
 
-      scene.rotation.y = (mouseX * 0.1) + currentRotationY;
-      scene.rotation.x = (-mouseY * 0.1) + currentRotationX;
+      scene.rotation.y = (mouseX * 0.05) + currentRotationY;
+      scene.rotation.x = (-mouseY * 0.05) + currentRotationX;
 
       renderer.render(scene, camera);
     };
@@ -226,11 +226,10 @@ export default function ThreeBackground() {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
-      window.removeEventListener('contextmenu', preventDefault);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleTouchEnd);
-      window.removeEventListener('neural-pulse', handlePulse);
+      window.removeEventListener('theme-change', onThemeChange);
       
       if (containerRef.current && renderer.domElement) {
         containerRef.current.removeChild(renderer.domElement);
@@ -243,9 +242,8 @@ export default function ThreeBackground() {
   return (
     <div 
       ref={containerRef} 
-      className="fixed inset-0 -z-10 pointer-events-auto cursor-crosshair opacity-80 select-none" 
-      title="Right-click drag to explore, double click for pulse"
-      onDoubleClick={() => window.dispatchEvent(new CustomEvent('neural-pulse'))}
+      className="fixed inset-0 -z-10 pointer-events-auto cursor-crosshair opacity-90 select-none" 
+      title="Right-click drag to explore"
     />
   );
 }

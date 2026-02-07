@@ -24,6 +24,52 @@
     --input: 240 5% 15%;
     --ring: 263 70% 75%;
     --radius: 1.25rem;
+    --particle-color: #a855f7;
+  }
+
+  .light {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 98%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 262 83% 58%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 262 83% 58%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 262 83% 58%;
+    --particle-color: #7c3aed;
+  }
+
+  .cyber {
+    --background: 260 100% 3%;
+    --foreground: 180 100% 50%;
+    --primary: 320 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --accent: 180 100% 50%;
+    --card: 260 100% 5%;
+    --border: 320 100% 50% / 0.3;
+    --particle-color: #ff00ff;
+  }
+
+  .nature {
+    --background: 140 30% 5%;
+    --foreground: 120 40% 90%;
+    --primary: 142 70% 45%;
+    --primary-foreground: 144 80% 10%;
+    --accent: 45 90% 50%;
+    --card: 140 30% 8%;
+    --border: 142 70% 45% / 0.2;
+    --particle-color: #22c55e;
   }
 }
 
@@ -32,8 +78,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-body antialiased selection:bg-primary/30;
-    background-color: #0a0a0c;
+    @apply bg-background text-foreground font-body antialiased selection:bg-primary/30 transition-colors duration-500;
   }
 }
 
@@ -41,12 +86,12 @@
   @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.3)];
 }
 
-.soft-glow {
-  box-shadow: 0 0 50px -10px hsla(263, 70%, 75%, 0.15);
+.light .glass-morphism {
+  @apply bg-black/[0.03] backdrop-blur-xl border border-black/[0.08] shadow-none;
 }
 
 .text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-br from-white via-white/90 to-primary/50;
+  @apply bg-clip-text text-transparent bg-gradient-to-br from-foreground via-foreground/90 to-primary/50;
 }
 
 @keyframes float {
@@ -56,16 +101,4 @@
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
-}
-
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-white/10 rounded-full hover:bg-white/20 transition-colors;
 }
