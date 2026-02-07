@@ -18,31 +18,31 @@ export default function ThreeBackground() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     containerRef.current.appendChild(renderer.domElement);
 
-    // Create more sophisticated particles
-    const particlesCount = 200;
+    // Create sophisticated neural network style particles
+    const particlesCount = 250;
     const posArray = new Float32Array(particlesCount * 3);
     const velocityArray = new Float32Array(particlesCount * 3);
     
     for(let i = 0; i < particlesCount * 3; i++) {
-      posArray[i] = (Math.random() - 0.5) * 12;
-      velocityArray[i] = (Math.random() - 0.5) * 0.01;
+      posArray[i] = (Math.random() - 0.5) * 15;
+      velocityArray[i] = (Math.random() - 0.5) * 0.008;
     }
 
     const particlesGeometry = new THREE.BufferGeometry();
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
 
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.03,
-      color: 0x8F00FF, // Electric Violet
+      size: 0.04,
+      color: 0x6D28D9, // Deep Purple / Primary
       transparent: true,
-      opacity: 0.4,
+      opacity: 0.3,
       blending: THREE.AdditiveBlending,
     });
 
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particlesMesh);
 
-    camera.position.z = 5;
+    camera.position.z = 6;
 
     let mouseX = 0;
     let mouseY = 0;
@@ -57,27 +57,27 @@ export default function ThreeBackground() {
     const animate = () => {
       requestAnimationFrame(animate);
 
-      // Rotate slowly
-      particlesMesh.rotation.y += 0.0005;
+      // Slow drift
+      particlesMesh.rotation.y += 0.0003;
+      particlesMesh.rotation.x += 0.0001;
       
-      // Gentle floating animation
       const positions = particlesGeometry.attributes.position.array as Float32Array;
       for (let i = 0; i < particlesCount; i++) {
         const idx = i * 3;
-        positions[idx] += velocityArray[idx] * 0.2;
-        positions[idx+1] += velocityArray[idx+1] * 0.2;
-        positions[idx+2] += velocityArray[idx+2] * 0.2;
+        positions[idx] += velocityArray[idx];
+        positions[idx+1] += velocityArray[idx+1];
+        positions[idx+2] += velocityArray[idx+2];
 
-        // Bounce back within bounds
-        if (Math.abs(positions[idx]) > 6) velocityArray[idx] *= -1;
-        if (Math.abs(positions[idx+1]) > 6) velocityArray[idx+1] *= -1;
-        if (Math.abs(positions[idx+2]) > 6) velocityArray[idx+2] *= -1;
+        // Soft containment
+        if (Math.abs(positions[idx]) > 8) velocityArray[idx] *= -1;
+        if (Math.abs(positions[idx+1]) > 8) velocityArray[idx+1] *= -1;
+        if (Math.abs(positions[idx+2]) > 8) velocityArray[idx+2] *= -1;
       }
       particlesGeometry.attributes.position.needsUpdate = true;
 
-      // Mouse parallax
-      camera.position.x += (mouseX * 1.5 - camera.position.x) * 0.02;
-      camera.position.y += (-mouseY * 1.5 - camera.position.y) * 0.02;
+      // Smooth camera motion
+      camera.position.x += (mouseX * 2 - camera.position.x) * 0.01;
+      camera.position.y += (-mouseY * 2 - camera.position.y) * 0.01;
       camera.lookAt(scene.position);
 
       renderer.render(scene, camera);
@@ -104,5 +104,5 @@ export default function ThreeBackground() {
     };
   }, []);
 
-  return <div ref={containerRef} className="fixed inset-0 -z-10 pointer-events-none opacity-40" />;
+  return <div ref={containerRef} className="fixed inset-0 -z-20 pointer-events-none opacity-60" />;
 }
