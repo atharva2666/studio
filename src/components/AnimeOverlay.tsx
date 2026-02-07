@@ -1,12 +1,31 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
+interface LeafProps {
+  left: string;
+  delay: string;
+  duration: string;
+  scale: number;
+}
+
 export default function AnimeOverlay() {
+  const [leaves, setLeaves] = useState<LeafProps[]>([]);
   const character1 = PlaceHolderImages.find(img => img.id === 'anime-character-1');
   const character2 = PlaceHolderImages.find(img => img.id === 'anime-character-2');
+
+  useEffect(() => {
+    // Generate leaf properties only on the client to avoid hydration mismatch
+    const generatedLeaves = Array.from({ length: 15 }).map(() => ({
+      left: `${Math.random() * 100}vw`,
+      delay: `${Math.random() * 10}s`,
+      duration: `${10 + Math.random() * 20}s`,
+      scale: 0.5 + Math.random(),
+    }));
+    setLeaves(generatedLeaves);
+  }, []);
 
   return (
     <div className="anime-only fixed inset-0 pointer-events-none z-40 overflow-hidden">
@@ -39,17 +58,17 @@ export default function AnimeOverlay() {
         )}
       </div>
 
-      {/* Floating Sakura Petal Effects (CSS-based extra layer) */}
+      {/* Floating Sakura Petal Effects */}
       <div className="absolute inset-0">
-        {Array.from({ length: 15 }).map((_, i) => (
+        {leaves.map((leaf, i) => (
           <div 
             key={i} 
             className="sakura-leaf" 
             style={{
-              left: `${Math.random() * 100}vw`,
-              animationDelay: `${Math.random() * 10}s`,
-              animationDuration: `${10 + Math.random() * 20}s`,
-              transform: `scale(${0.5 + Math.random()})`
+              left: leaf.left,
+              animationDelay: leaf.delay,
+              animationDuration: leaf.duration,
+              transform: `scale(${leaf.scale})`
             }}
           />
         ))}
