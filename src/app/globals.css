@@ -130,8 +130,18 @@
   50% { transform: translateY(-30px) rotate(2deg); }
 }
 
+@keyframes wave {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(15deg); }
+}
+
 .animate-float {
   animation: float 8s ease-in-out infinite;
+}
+
+.animate-wave {
+  animation: wave 2.5s ease-in-out infinite;
+  transform-origin: bottom right;
 }
 
 @keyframes sakura-drift {

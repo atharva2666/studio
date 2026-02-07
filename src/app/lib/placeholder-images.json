@@ -42,6 +42,12 @@
       "description": "Anime character peeking from top corner",
       "imageUrl": "https://picsum.photos/seed/anime-peek-2/400/600",
       "imageHint": "anime boy"
+    },
+    {
+      "id": "anime-waving",
+      "description": "Cheerful anime girl waving hi",
+      "imageUrl": "https://picsum.photos/seed/anime-wave-hi/600/600",
+      "imageHint": "anime girl waving"
     }
   ]
 }

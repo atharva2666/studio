@@ -18,6 +18,7 @@ export default function AnimeOverlay() {
   const character2 = PlaceHolderImages.find(img => img.id === 'anime-character-2');
   const characterTopLeft = PlaceHolderImages.find(img => img.id === 'anime-character-top-left');
   const characterTopRight = PlaceHolderImages.find(img => img.id === 'anime-character-top-right');
+  const wavingMascot = PlaceHolderImages.find(img => img.id === 'anime-waving');
 
   useEffect(() => {
     // Generate leaf properties only on the client to avoid hydration mismatch
@@ -32,6 +33,26 @@ export default function AnimeOverlay() {
 
   return (
     <div className="anime-only fixed inset-0 pointer-events-none z-40 overflow-hidden">
+      {/* Animated Waving Mascot - Centered Top */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[350px] h-[350px] opacity-100 z-50 transition-all duration-1000 translate-y-[-20px]">
+        {wavingMascot && (
+          <div className="relative w-full h-full animate-wave">
+            <Image 
+              src={wavingMascot.imageUrl} 
+              alt="Waving Mascot" 
+              fill 
+              priority
+              className="object-contain drop-shadow-[0_0_40px_rgba(255,105,180,0.7)]" 
+              data-ai-hint={wavingMascot.imageHint}
+            />
+            {/* Speech Bubble / Greeting */}
+            <div className="absolute -top-4 -right-12 bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl rounded-bl-none border-2 border-pink-400 shadow-xl animate-bounce">
+              <span className="text-pink-600 font-black text-xs tracking-tighter">OHAYO! ^_^</span>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Top Corner Peeking Characters */}
       <div className="absolute top-[-20px] left-[-30px] w-[300px] h-[450px] opacity-80 animate-float pointer-events-none transition-all duration-1000">
         {characterTopLeft && (
