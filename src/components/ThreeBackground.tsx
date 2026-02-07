@@ -43,7 +43,7 @@ export default function ThreeBackground() {
     let specialObjects: THREE.Group = new THREE.Group();
     scene.add(specialObjects);
 
-    const particlesCount = 1500;
+    const particlesCount = 2500;
     const posAttr = new THREE.BufferAttribute(new Float32Array(particlesCount * 3), 3);
     const colorAttr = new THREE.BufferAttribute(new Float32Array(particlesCount * 3), 3);
     const velAttr = new Float32Array(particlesCount * 3);
@@ -53,25 +53,39 @@ export default function ThreeBackground() {
       for (let i = 0; i < particlesCount; i++) {
         const i3 = i * 3;
         
-        // Reset positions based on theme
         if (theme === 'matrix') {
-          posAttr.array[i3] = (Math.random() - 0.5) * 300;
-          posAttr.array[i3 + 1] = Math.random() * 400 - 200;
-          posAttr.array[i3 + 2] = (Math.random() - 0.5) * 300;
-          velAttr[i3 + 1] = -Math.random() * 2 - 1;
+          // Columns of falling code
+          posAttr.array[i3] = (Math.random() - 0.5) * 600;
+          posAttr.array[i3 + 1] = Math.random() * 800 - 400;
+          posAttr.array[i3 + 2] = (Math.random() - 0.5) * 600;
+          velAttr[i3 + 1] = -Math.random() * 3 - 2;
+          velAttr[i3] = 0;
+          velAttr[i3 + 2] = 0;
+        } else if (theme === 'nebula') {
+          // Dense starfield cloud
+          const radius = 200 + Math.random() * 300;
+          const theta = Math.random() * Math.PI * 2;
+          const phi = Math.acos(2 * Math.random() - 1);
+          posAttr.array[i3] = radius * Math.sin(phi) * Math.cos(theta);
+          posAttr.array[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+          posAttr.array[i3 + 2] = radius * Math.cos(phi);
+          velAttr[i3] = (Math.random() - 0.5) * 0.05;
+          velAttr[i3 + 1] = (Math.random() - 0.5) * 0.05;
+          velAttr[i3 + 2] = (Math.random() - 0.5) * 0.05;
         } else if (theme === 'nature') {
-          posAttr.array[i3] = (Math.random() - 0.5) * 400;
-          posAttr.array[i3 + 1] = (Math.random() - 0.5) * 400;
-          posAttr.array[i3 + 2] = (Math.random() - 0.5) * 400;
+          posAttr.array[i3] = (Math.random() - 0.5) * 500;
+          posAttr.array[i3 + 1] = (Math.random() - 0.5) * 500;
+          posAttr.array[i3 + 2] = (Math.random() - 0.5) * 500;
           velAttr[i3] = (Math.random() - 0.5) * 0.2;
-          velAttr[i3 + 1] = -0.1 - Math.random() * 0.2;
+          velAttr[i3 + 1] = -0.2 - Math.random() * 0.3;
+          velAttr[i3 + 2] = (Math.random() - 0.5) * 0.1;
         } else {
           posAttr.array[i3] = (Math.random() - 0.5) * 500;
           posAttr.array[i3 + 1] = (Math.random() - 0.5) * 500;
           posAttr.array[i3 + 2] = (Math.random() - 0.5) * 500;
-          velAttr[i3] = (Math.random() - 0.5) * 0.1;
-          velAttr[i3 + 1] = (Math.random() - 0.5) * 0.1;
-          velAttr[i3 + 2] = (Math.random() - 0.5) * 0.1;
+          velAttr[i3] = (Math.random() - 0.5) * 0.15;
+          velAttr[i3 + 1] = (Math.random() - 0.5) * 0.15;
+          velAttr[i3 + 2] = (Math.random() - 0.5) * 0.15;
         }
 
         colorAttr.array[i3] = themeColor.r;
@@ -87,10 +101,10 @@ export default function ThreeBackground() {
     geometry.setAttribute('color', colorAttr);
 
     const material = new THREE.PointsMaterial({
-      size: 2,
+      size: 1.8,
       vertexColors: true,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.8,
       blending: THREE.AdditiveBlending
     });
 
@@ -104,7 +118,7 @@ export default function ThreeBackground() {
 
     initParticles();
 
-    // --- Interaction Logic ---
+    // --- Interaction Logic (Multi-Touch Support) ---
     let targetRotationX = 0;
     let targetRotationY = 0;
     let currentRotationX = 0;
@@ -112,7 +126,8 @@ export default function ThreeBackground() {
     let isDragging = false;
     let previousX = 0;
     let previousY = 0;
-    let zoomLevel = 150;
+    let initialTouchDistance = 0;
+    let zoomLevel = 350;
 
     const handleMouseDown = (e: MouseEvent) => {
       isDragging = true;
@@ -124,8 +139,8 @@ export default function ThreeBackground() {
       if (!isDragging) return;
       const deltaX = e.clientX - previousX;
       const deltaY = e.clientY - previousY;
-      targetRotationY += deltaX * 0.01;
-      targetRotationX += deltaY * 0.01;
+      targetRotationY += deltaX * 0.005;
+      targetRotationX += deltaY * 0.005;
       previousX = e.clientX;
       previousY = e.clientY;
     };
@@ -138,8 +153,11 @@ export default function ThreeBackground() {
         previousX = e.touches[0].clientX;
         previousY = e.touches[0].clientY;
       } else if (e.touches.length === 2) {
-        // Multi-touch initial dist
-        previousX = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+        // Prepare for pinch-to-zoom
+        initialTouchDistance = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
       }
     };
 
@@ -147,20 +165,24 @@ export default function ThreeBackground() {
       if (e.touches.length === 1 && isDragging) {
         const deltaX = e.touches[0].clientX - previousX;
         const deltaY = e.touches[0].clientY - previousY;
-        targetRotationY += deltaX * 0.01;
-        targetRotationX += deltaY * 0.01;
+        targetRotationY += deltaX * 0.008;
+        targetRotationX += deltaY * 0.008;
         previousX = e.touches[0].clientX;
         previousY = e.touches[0].clientY;
       } else if (e.touches.length === 2) {
-        const currentDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-        const delta = currentDist - (previousX as number);
-        zoomLevel = Math.max(50, Math.min(400, zoomLevel - delta * 0.5));
-        previousX = currentDist;
+        // Pinch-to-zoom
+        const currentDistance = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        const delta = currentDistance - initialTouchDistance;
+        zoomLevel = Math.max(100, Math.min(800, zoomLevel - delta * 0.5));
+        initialTouchDistance = currentDistance;
       }
     };
 
     const handleWheel = (e: WheelEvent) => {
-      zoomLevel = Math.max(50, Math.min(400, zoomLevel + e.deltaY * 0.1));
+      zoomLevel = Math.max(100, Math.min(800, zoomLevel + e.deltaY * 0.5));
     };
 
     window.addEventListener('mousedown', handleMouseDown);
@@ -191,11 +213,17 @@ export default function ThreeBackground() {
       while(specialObjects.children.length > 0) specialObjects.remove(specialObjects.children[0]);
 
       if (themeRef.current === 'cyber') {
-        const grid = new THREE.GridHelper(400, 20, themeColor, themeColor);
-        grid.position.y = -100;
+        const grid = new THREE.GridHelper(600, 30, themeColor, themeColor);
+        grid.position.y = -150;
         grid.material.transparent = true;
-        grid.material.opacity = 0.2;
+        grid.material.opacity = 0.15;
         specialObjects.add(grid);
+      } else if (themeRef.current === 'matrix') {
+        const floor = new THREE.GridHelper(1000, 50, themeColor, themeColor);
+        floor.position.y = -300;
+        floor.material.transparent = true;
+        floor.material.opacity = 0.05;
+        specialObjects.add(floor);
       }
     };
 
@@ -214,33 +242,42 @@ export default function ThreeBackground() {
         
         if (theme === 'matrix') {
           positions[i3 + 1] += velAttr[i3 + 1];
-          if (positions[i3 + 1] < -200) positions[i3 + 1] = 200;
+          if (positions[i3 + 1] < -400) positions[i3 + 1] = 400;
         } else if (theme === 'nature') {
-          positions[i3] += velAttr[i3] + Math.sin(Date.now() * 0.001 + i) * 0.05;
+          positions[i3] += velAttr[i3] + Math.sin(Date.now() * 0.001 + i) * 0.1;
           positions[i3 + 1] += velAttr[i3 + 1];
-          positions[i3 + 2] += Math.cos(Date.now() * 0.001 + i) * 0.05;
-          if (positions[i3 + 1] < -200) positions[i3 + 1] = 200;
+          positions[i3 + 2] += velAttr[i3 + 2];
+          if (positions[i3 + 1] < -300) {
+             positions[i3 + 1] = 300;
+             positions[i3] = (Math.random() - 0.5) * 500;
+          }
+        } else if (theme === 'nebula') {
+          positions[i3] += velAttr[i3] + Math.sin(Date.now() * 0.0005 + i) * 0.05;
+          positions[i3 + 1] += velAttr[i3 + 1];
+          positions[i3 + 2] += velAttr[i3 + 2];
         } else {
           positions[i3] += velAttr[i3];
           positions[i3 + 1] += velAttr[i3 + 1];
           positions[i3 + 2] += velAttr[i3 + 2];
           
-          if (Math.abs(positions[i3]) > 250) velAttr[i3] *= -1;
-          if (Math.abs(positions[i3+1]) > 250) velAttr[i3+1] *= -1;
-          if (Math.abs(positions[i3+2]) > 250) velAttr[i3+2] *= -1;
+          if (Math.abs(positions[i3]) > 400) velAttr[i3] *= -1;
+          if (Math.abs(positions[i3+1]) > 400) velAttr[i3+1] *= -1;
+          if (Math.abs(positions[i3+2]) > 400) velAttr[i3+2] *= -1;
         }
       }
       posAttr.needsUpdate = true;
 
-      // Constellation lines for Neural themes
+      // Constellation lines for specific themes
       if (theme === 'dark' || theme === 'light' || theme === 'nebula') {
         const linePos = [];
-        const limit = theme === 'nebula' ? 5 : 10;
+        const limit = theme === 'nebula' ? 10 : 15;
+        const maxDist = theme === 'nebula' ? 25 : 45;
+        
         for (let i = 0; i < particlesCount; i += limit) {
-          for (let j = i + limit; j < i + (limit * 3) && j < particlesCount; j += limit) {
+          for (let j = i + limit; j < i + (limit * 2) && j < particlesCount; j += limit) {
             const i3 = i * 3, j3 = j * 3;
             const dist = Math.hypot(positions[i3]-positions[j3], positions[i3+1]-positions[j3+1], positions[i3+2]-positions[j3+2]);
-            if (dist < 35) {
+            if (dist < maxDist) {
               linePos.push(positions[i3], positions[i3+1], positions[i3+2], positions[j3], positions[j3+1], positions[j3+2]);
             }
           }
@@ -258,9 +295,10 @@ export default function ThreeBackground() {
       scene.rotation.x = currentRotationX;
       scene.rotation.y = currentRotationY;
       
-      // Auto-rotate slowly
+      // Auto-rotation
       targetRotationY += 0.001;
 
+      // Zoom smooth update
       camera.position.z += (zoomLevel - camera.position.z) * 0.05;
 
       renderer.render(scene, camera);
