@@ -12,10 +12,14 @@ export default function ThreeBackground() {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "high-performance" });
+    const renderer = new THREE.WebGLRenderer({ 
+      alpha: true, 
+      antialias: false, // Disabled for performance
+      powerPreference: "high-performance" 
+    });
     
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // Capped at 1.5 for performance
     containerRef.current.appendChild(renderer.domElement);
 
     const getThemeConfig = () => {
@@ -30,31 +34,29 @@ export default function ThreeBackground() {
 
     let { color: themeColor, isAnime } = getThemeConfig();
 
-    // Configuration for particles
-    const particlesCount = 2000;
+    // Performance optimized particle count
+    const particlesCount = 1200; 
     const positions = new Float32Array(particlesCount * 3);
     const velocities = new Float32Array(particlesCount * 3);
     const colors = new Float32Array(particlesCount * 3);
     const sizes = new Float32Array(particlesCount);
-    const flutter = new Float32Array(particlesCount); // For leaf-like wobble
+    const flutter = new Float32Array(particlesCount); 
 
     const resetParticle = (i: number, initial = false) => {
       const ix = i * 3;
       positions[ix] = (Math.random() - 0.5) * 120;
-      positions[ix + 1] = initial ? (Math.random() - 0.5) * 100 : 60; // Start high if resetting
+      positions[ix + 1] = initial ? (Math.random() - 0.5) * 100 : 60;
       positions[ix + 2] = (Math.random() - 0.5) * 100;
       
-      // Horizontal drift
       velocities[ix] = (Math.random() - 0.5) * 0.05;
-      // Falling speed (randomized for variety)
-      velocities[ix + 1] = -(0.05 + Math.random() * 0.15);
+      velocities[ix + 1] = -(0.08 + Math.random() * 0.12); // Slightly faster fall
       velocities[ix + 2] = (Math.random() - 0.5) * 0.05;
 
       colors[ix] = themeColor.r;
       colors[ix + 1] = themeColor.g;
       colors[ix + 2] = themeColor.b;
       
-      sizes[i] = isAnime ? Math.random() * 1.5 + 0.5 : 0.3;
+      sizes[i] = isAnime ? Math.random() * 2.5 + 1.0 : 0.4; // Larger in anime mode
       flutter[i] = Math.random() * Math.PI * 2;
     };
 
@@ -68,7 +70,7 @@ export default function ThreeBackground() {
     particlesGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.5,
+      size: 0.6,
       vertexColors: true,
       transparent: true,
       opacity: 0.8,
@@ -79,18 +81,17 @@ export default function ThreeBackground() {
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particlesMesh);
 
-    // Constellation lines (only for non-anime modes)
     const lineMaterial = new THREE.LineBasicMaterial({
       color: themeColor,
       transparent: true,
-      opacity: 0.2,
+      opacity: 0.15,
       blending: THREE.AdditiveBlending,
     });
     const lineGeometry = new THREE.BufferGeometry();
     const lineMesh = new THREE.LineSegments(lineGeometry, lineMaterial);
     scene.add(lineMesh);
 
-    camera.position.z = 50;
+    camera.position.z = 60;
 
     let mouseX = 0;
     let mouseY = 0;
@@ -108,7 +109,7 @@ export default function ThreeBackground() {
       isAnime = config.isAnime;
       
       lineMaterial.color = themeColor;
-      lineMaterial.opacity = isAnime ? 0 : 0.2;
+      lineMaterial.opacity = isAnime ? 0 : 0.15;
       
       const colorArray = particlesGeometry.attributes.color.array as Float32Array;
       const sizeArray = particlesGeometry.attributes.size.array as Float32Array;
@@ -116,14 +117,14 @@ export default function ThreeBackground() {
         colorArray[i * 3] = themeColor.r;
         colorArray[i * 3 + 1] = themeColor.g;
         colorArray[i * 3 + 2] = themeColor.b;
-        sizeArray[i] = isAnime ? Math.random() * 1.5 + 0.5 : 0.3;
+        sizeArray[i] = isAnime ? Math.random() * 2.5 + 1.0 : 0.4;
       }
       particlesGeometry.attributes.color.needsUpdate = true;
       particlesGeometry.attributes.size.needsUpdate = true;
     };
 
     const handleMouseDown = (e: MouseEvent) => {
-      if (e.button === 2 || e.button === 0) { // Right click or left click drag
+      if (e.button === 2 || e.button === 0) { 
         isDragging = true;
         lastMouseX = e.clientX;
         lastMouseY = e.clientY;
@@ -139,40 +140,16 @@ export default function ThreeBackground() {
         lastMouseX = e.clientX;
         lastMouseY = e.clientY;
       }
-      // Subtle parallax for everyone
       mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
       mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
     };
 
-    const handleMouseUp = () => {
-      isDragging = false;
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      if (e.touches.length === 2) {
-        const touch = e.touches[0];
-        const deltaX = touch.clientX - lastMouseX;
-        const deltaY = touch.clientY - lastMouseY;
-        targetRotationY += deltaX * 0.01;
-        targetRotationX += deltaY * 0.01;
-        lastMouseX = touch.clientX;
-        lastMouseY = touch.clientY;
-      }
-    };
-
-    const handleTouchStart = (e: TouchEvent) => {
-      if (e.touches.length === 2) {
-        lastMouseX = e.touches[0].clientX;
-        lastMouseY = e.touches[0].clientY;
-      }
-    };
+    const handleMouseUp = () => isDragging = false;
 
     window.addEventListener('theme-change', onThemeChange);
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
-    window.addEventListener('touchstart', handleTouchStart);
-    window.addEventListener('touchmove', handleTouchMove);
     window.addEventListener('contextmenu', (e) => e.preventDefault());
 
     const animate = () => {
@@ -186,37 +163,32 @@ export default function ThreeBackground() {
         const iz = i * 3 + 2;
 
         if (isAnime) {
-          // "Falling Leaf" Physics
-          flutter[i] += 0.02;
-          posArray[ix] += Math.sin(flutter[i]) * 0.05 + velocities[ix];
-          posArray[iy] += velocities[iy]; // Gravity
-          posArray[iz] += Math.cos(flutter[i]) * 0.05 + velocities[iz];
+          flutter[i] += 0.015;
+          posArray[ix] += Math.sin(flutter[i]) * 0.04 + velocities[ix];
+          posArray[iy] += velocities[iy]; 
+          posArray[iz] += Math.cos(flutter[i]) * 0.04 + velocities[iz];
 
-          // Reset if fallen past bottom
-          if (posArray[iy] < -60) {
-            resetParticle(i);
-          }
+          if (posArray[iy] < -70) resetParticle(i);
         } else {
-          // "Constellation" Physics
-          posArray[ix] += velocities[ix] * 0.5;
+          posArray[ix] += velocities[ix] * 0.4;
           posArray[iy] += velocities[iy] * 0.2;
-          posArray[iz] += velocities[iz] * 0.5;
+          posArray[iz] += velocities[iz] * 0.4;
 
-          // Wrap boundaries
-          if (posArray[ix] > 60) posArray[ix] = -60;
-          if (posArray[ix] < -60) posArray[ix] = 60;
-          if (posArray[iy] > 60) posArray[iy] = -60;
-          if (posArray[iy] < -60) posArray[iy] = 60;
+          if (posArray[ix] > 70) posArray[ix] = -70;
+          if (posArray[ix] < -70) posArray[ix] = 70;
+          if (posArray[iy] > 70) posArray[iy] = -70;
+          if (posArray[iy] < -70) posArray[iy] = 70;
         }
       }
       particlesGeometry.attributes.position.needsUpdate = true;
 
-      // Update constellation lines if not anime
+      // Optimized Line Loop
       if (!isAnime) {
         const linePositions = [];
-        const maxDistance = 10;
-        for (let i = 0; i < particlesCount; i += 10) {
-          for (let j = i + 1; j < i + 20 && j < particlesCount; j++) {
+        const maxDistanceSq = 100; // 10 * 10
+        // Only check 1/4 of particles for lines to boost performance
+        for (let i = 0; i < particlesCount; i += 8) {
+          for (let j = i + 1; j < i + 15 && j < particlesCount; j++) {
             const ix = i * 3;
             const iy = i * 3 + 1;
             const iz = i * 3 + 2;
@@ -229,7 +201,7 @@ export default function ThreeBackground() {
             const dz = posArray[iz] - posArray[jz];
             const distSq = dx * dx + dy * dy + dz * dz;
 
-            if (distSq < maxDistance * maxDistance) {
+            if (distSq < maxDistanceSq) {
               linePositions.push(
                 posArray[ix], posArray[iy], posArray[iz],
                 posArray[jx], posArray[jy], posArray[jz]
@@ -242,7 +214,6 @@ export default function ThreeBackground() {
         lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute([], 3));
       }
 
-      // Smoothing rotation
       currentRotationX += (targetRotationX - currentRotationX) * 0.05;
       currentRotationY += (targetRotationY - currentRotationY) * 0.05;
 
@@ -268,14 +239,16 @@ export default function ThreeBackground() {
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
       if (containerRef.current && renderer.domElement) {
         containerRef.current.removeChild(renderer.domElement);
       }
       renderer.dispose();
+      particlesGeometry.dispose();
+      lineGeometry.dispose();
+      particlesMaterial.dispose();
+      lineMaterial.dispose();
     };
   }, []);
 
-  return <div ref={containerRef} className="fixed inset-0 -z-10 pointer-events-none cursor-grab active:cursor-grabbing" />;
+  return <div ref={containerRef} className="fixed inset-0 -z-10 pointer-events-none" />;
 }
