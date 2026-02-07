@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -39,11 +38,11 @@
 }
 
 .glass-morphism {
-  @apply bg-black/50 backdrop-blur-2xl border border-white/10 shadow-[0_0_50px_-10px_rgba(168,85,247,0.4)];
+  @apply bg-black/60 backdrop-blur-2xl border border-white/10 shadow-[0_0_50px_-10px_rgba(168,85,247,0.5)];
 }
 
 .neon-glow {
-  text-shadow: 0 0 30px hsla(275, 100%, 65%, 0.6);
+  text-shadow: 0 0 40px hsla(275, 100%, 65%, 0.8);
 }
 
 .vibrant-gradient {
@@ -51,7 +50,7 @@
 }
 
 .hero-text-glow {
-  @apply drop-shadow-[0_0_40px_rgba(168,85,247,0.6)];
+  @apply drop-shadow-[0_0_50px_rgba(168,85,247,0.8)];
 }
 
 @keyframes float {
@@ -61,4 +60,16 @@
 
 .animate-float {
   animation: float 8s ease-in-out infinite;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary/20 rounded-full hover:bg-primary/40 transition-colors;
 }
