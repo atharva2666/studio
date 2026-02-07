@@ -70,12 +70,12 @@
   }
 
   .anime {
-    --background: 330 60% 4%;
+    --background: 330 60% 6%;
     --foreground: 330 100% 95%;
     --primary: 330 100% 75%;
     --primary-foreground: 330 100% 10%;
     --accent: 190 100% 70%;
-    --card: 330 60% 7%;
+    --card: 330 60% 8%;
     --border: 330 100% 75% / 0.3;
     --particle-color: #ffb7c5;
     --radius: 2.5rem;
@@ -91,21 +91,21 @@
   }
 }
 
-.anime-only {
-  display: none;
+/* Visibility classes for Anime Theme Mascot */
+.anime-mascot {
+  display: none !important;
 }
 
-.anime .anime-only {
-  display: block;
+.anime .anime-mascot {
+  display: flex !important;
 }
 
-/* Enhanced UI Changes for Anime Theme */
 .anime .glass-morphism {
-  @apply bg-pink-500/[0.1] backdrop-blur-3xl border-pink-500/30 shadow-[0_0_60px_rgba(255,105,180,0.3)];
+  @apply bg-pink-500/[0.12] backdrop-blur-3xl border-pink-400/40 shadow-[0_0_80px_rgba(255,105,180,0.4)];
 }
 
 .anime .text-gradient {
-  @apply bg-gradient-to-r from-pink-400 via-purple-300 to-cyan-400;
+  @apply bg-gradient-to-r from-pink-400 via-white to-cyan-400;
 }
 
 .glass-morphism {
@@ -127,15 +127,15 @@
 
 @keyframes wave {
   0%, 100% { transform: rotate(-10deg); }
-  50% { transform: rotate(30deg); }
+  50% { transform: rotate(15deg); }
 }
 
 .animate-float {
-  animation: float 8s ease-in-out infinite;
+  animation: float 6s ease-in-out infinite;
 }
 
-.animate-wave {
-  animation: wave 1.5s ease-in-out infinite;
+.animate-wave-hand {
+  animation: wave 1s ease-in-out infinite;
 }
 
 @keyframes sakura-drift {
@@ -148,8 +148,8 @@
 .sakura-leaf {
   position: absolute;
   top: -10vh;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   background: #ffb7c5;
   border-radius: 100% 0 100% 0;
   opacity: 0.8;

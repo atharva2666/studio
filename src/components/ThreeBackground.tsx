@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useRef } from 'react';
@@ -34,8 +33,7 @@ export default function ThreeBackground() {
 
     let { color: themeColor, isAnime } = getThemeConfig();
 
-    // Highly optimized particle counts
-    const particlesCount = isAnime ? 800 : 600; 
+    const particlesCount = isAnime ? 1200 : 800; 
     const positions = new Float32Array(particlesCount * 3);
     const velocities = new Float32Array(particlesCount * 3);
     const colors = new Float32Array(particlesCount * 3);
@@ -44,19 +42,19 @@ export default function ThreeBackground() {
 
     const resetParticle = (i: number, initial = false) => {
       const ix = i * 3;
-      positions[ix] = (Math.random() - 0.5) * 140;
-      positions[ix + 1] = initial ? (Math.random() - 0.5) * 120 : 70;
-      positions[ix + 2] = (Math.random() - 0.5) * 140;
+      positions[ix] = (Math.random() - 0.5) * 160;
+      positions[ix + 1] = initial ? (Math.random() - 0.5) * 140 : 80;
+      positions[ix + 2] = (Math.random() - 0.5) * 160;
       
-      velocities[ix] = (Math.random() - 0.5) * 0.03;
-      velocities[ix + 1] = -(0.05 + Math.random() * 0.1); 
-      velocities[ix + 2] = (Math.random() - 0.5) * 0.03;
+      velocities[ix] = (Math.random() - 0.5) * 0.04;
+      velocities[ix + 1] = -(0.04 + Math.random() * 0.12); 
+      velocities[ix + 2] = (Math.random() - 0.5) * 0.04;
 
       colors[ix] = themeColor.r;
       colors[ix + 1] = themeColor.g;
       colors[ix + 2] = themeColor.b;
       
-      sizes[i] = isAnime ? Math.random() * 3.5 + 1.5 : 0.4; 
+      sizes[i] = isAnime ? Math.random() * 4.5 + 2.0 : 0.6; 
       flutter[i] = Math.random() * Math.PI * 2;
     };
 
@@ -70,10 +68,10 @@ export default function ThreeBackground() {
     particlesGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.8,
+      size: 1.2,
       vertexColors: true,
       transparent: true,
-      opacity: 0.9,
+      opacity: 0.85,
       blending: THREE.AdditiveBlending,
       sizeAttenuation: true
     });
@@ -84,14 +82,14 @@ export default function ThreeBackground() {
     const lineMaterial = new THREE.LineBasicMaterial({
       color: themeColor,
       transparent: true,
-      opacity: 0.1,
+      opacity: 0.15,
       blending: THREE.AdditiveBlending,
     });
     const lineGeometry = new THREE.BufferGeometry();
     const lineMesh = new THREE.LineSegments(lineGeometry, lineMaterial);
     scene.add(lineMesh);
 
-    camera.position.z = 80;
+    camera.position.z = 90;
 
     let mouseX = 0;
     let mouseY = 0;
@@ -109,7 +107,7 @@ export default function ThreeBackground() {
       isAnime = config.isAnime;
       
       lineMaterial.color = themeColor;
-      lineMaterial.opacity = isAnime ? 0 : 0.1;
+      lineMaterial.opacity = isAnime ? 0 : 0.15;
       
       const colorArray = particlesGeometry.attributes.color.array as Float32Array;
       const sizeArray = particlesGeometry.attributes.size.array as Float32Array;
@@ -117,26 +115,24 @@ export default function ThreeBackground() {
         colorArray[i * 3] = themeColor.r;
         colorArray[i * 3 + 1] = themeColor.g;
         colorArray[i * 3 + 2] = themeColor.b;
-        sizeArray[i] = isAnime ? Math.random() * 3.5 + 1.5 : 0.4;
+        sizeArray[i] = isAnime ? Math.random() * 4.5 + 2.0 : 0.6;
       }
       particlesGeometry.attributes.color.needsUpdate = true;
       particlesGeometry.attributes.size.needsUpdate = true;
     };
 
     const handleMouseDown = (e: MouseEvent) => {
-      if (e.button === 2 || e.button === 0) { 
-        isDragging = true;
-        lastMouseX = e.clientX;
-        lastMouseY = e.clientY;
-      }
+      isDragging = true;
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
     };
 
     const handleMouseMove = (e: MouseEvent) => {
       if (isDragging) {
         const deltaX = e.clientX - lastMouseX;
         const deltaY = e.clientY - lastMouseY;
-        targetRotationY += deltaX * 0.003;
-        targetRotationX += deltaY * 0.003;
+        targetRotationY += deltaX * 0.004;
+        targetRotationX += deltaY * 0.004;
         lastMouseX = e.clientX;
         lastMouseY = e.clientY;
       }
@@ -150,7 +146,6 @@ export default function ThreeBackground() {
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
-    window.addEventListener('contextmenu', (e) => e.preventDefault());
 
     const animate = () => {
       requestAnimationFrame(animate);
@@ -158,37 +153,36 @@ export default function ThreeBackground() {
       const posArray = particlesGeometry.attributes.position.array as Float32Array;
 
       for (let i = 0; i < particlesCount; i++) {
-        const idx = i * 3;
-        const idy = i * 3 + 1;
-        const idz = i * 3 + 2;
+        const i3 = i * 3;
+        const ix = i3;
+        const iy = i3 + 1;
+        const iz = i3 + 2;
 
         if (isAnime) {
-          flutter[i] += 0.01;
-          posArray[idx] += Math.sin(flutter[i]) * 0.05 + velocities[idx];
-          posArray[idy] += velocities[idy]; 
-          posArray[idz] += Math.cos(flutter[i]) * 0.05 + velocities[idz];
+          flutter[i] += 0.015;
+          posArray[ix] += Math.sin(flutter[i]) * 0.06 + velocities[ix];
+          posArray[iy] += velocities[iy]; 
+          posArray[iz] += Math.cos(flutter[i]) * 0.06 + velocities[iz];
 
-          if (posArray[idy] < -80) resetParticle(i);
+          if (posArray[iy] < -90) resetParticle(i);
         } else {
-          posArray[idx] += velocities[idx] * 0.3;
-          posArray[idy] += velocities[idy] * 0.15;
-          posArray[idz] += velocities[idz] * 0.3;
+          posArray[ix] += velocities[ix] * 0.35;
+          posArray[iy] += velocities[iy] * 0.18;
+          posArray[iz] += velocities[iz] * 0.35;
 
-          if (posArray[idx] > 80) posArray[idx] = -80;
-          if (posArray[idx] < -80) posArray[idx] = 80;
-          if (posArray[idy] > 80) posArray[idy] = -80;
-          if (posArray[idy] < -80) posArray[idy] = 80;
+          if (posArray[ix] > 90) posArray[ix] = -90;
+          if (posArray[ix] < -90) posArray[ix] = 90;
+          if (posArray[iy] > 90) posArray[iy] = -90;
+          if (posArray[iy] < -90) posArray[iy] = 90;
         }
       }
       particlesGeometry.attributes.position.needsUpdate = true;
 
-      // Super-optimized line rendering for performance
       if (!isAnime) {
         const linePositions = [];
-        const maxDistSq = 144; // 12 units
-        // Sub-sample particles for line checking to keep FPS high
-        for (let i = 0; i < particlesCount; i += 12) {
-          for (let j = i + 1; j < i + 20 && j < particlesCount; j++) {
+        const maxDistSq = 169; // 13 units
+        for (let i = 0; i < particlesCount; i += 15) {
+          for (let j = i + 1; j < i + 25 && j < particlesCount; j++) {
             const i3 = i * 3;
             const j3 = j * 3;
             const dx = posArray[i3] - posArray[j3];
@@ -198,8 +192,8 @@ export default function ThreeBackground() {
 
             if (distSq < maxDistSq) {
               linePositions.push(
-                posArray[i3], posArray[i3+1], posArray[i3+2],
-                posArray[j3], posArray[j3+1], posArray[j3+2]
+                posArray[i3], posArray[i3 + 1], posArray[i3 + 2],
+                posArray[j3], posArray[j3 + 1], posArray[j3 + 2]
               );
             }
           }
@@ -209,11 +203,11 @@ export default function ThreeBackground() {
         lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute([], 3));
       }
 
-      currentRotationX += (targetRotationX - currentRotationX) * 0.04;
-      currentRotationY += (targetRotationY - currentRotationY) * 0.04;
+      currentRotationX += (targetRotationX - currentRotationX) * 0.05;
+      currentRotationY += (targetRotationY - currentRotationY) * 0.05;
 
-      scene.rotation.x = currentRotationX + (mouseY * 0.04);
-      scene.rotation.y = currentRotationY + (mouseX * 0.04);
+      scene.rotation.x = currentRotationX + (mouseY * 0.05);
+      scene.rotation.y = currentRotationY + (mouseX * 0.05);
 
       renderer.render(scene, camera);
     };

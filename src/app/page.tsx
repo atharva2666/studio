@@ -27,19 +27,19 @@ export default function Home() {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="min-h-screen flex flex-col justify-center px-6 md:px-12 max-w-7xl mx-auto pt-24 pb-12 relative z-10">
+      <section className="min-h-screen flex flex-col justify-center px-6 md:px-12 max-w-7xl mx-auto pt-32 pb-12 relative z-10">
         <div className="animate-in fade-in slide-in-from-bottom-12 duration-1000 relative">
           
           <Badge className="mb-10 bg-primary/10 text-primary border-primary/20 px-6 py-2 rounded-full font-bold tracking-[0.4em] text-[10px] flex w-fit items-center gap-3 backdrop-blur-md animate-float">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-            <Sparkles className="w-3 h-3 anime:inline-block hidden" />
+            <Sparkles className="w-3 h-3 hidden anime:inline-block" />
             <span className="anime:hidden">NEURAL ENGINE ACTIVE</span>
-            <span className="anime:inline hidden">ANIME PROTOCOL ENGAGED</span>
+            <span className="hidden anime:inline">ANIME PROTOCOL ENGAGED</span>
           </Badge>
           
-          <div className="flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-16">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 lg:gap-16">
             <div className="flex-1">
-              <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-[9rem] font-headline font-black leading-[0.9] tracking-tighter mb-14 text-gradient">
+              <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-[9.5rem] font-headline font-black leading-[0.85] tracking-tighter mb-14 text-gradient">
                 Building<br />
                 <span className="anime:text-accent transition-colors duration-700">The Future</span><br />
                 <span className="text-primary/70 italic">Today.</span>
@@ -47,21 +47,21 @@ export default function Home() {
             </div>
 
             {/* Anime Theme Mascot - Integrated beside the Hero Text */}
-            <div className="hidden anime:flex flex-col items-center justify-center animate-in zoom-in-75 fade-in duration-1000 delay-300">
-              <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-[400px] lg:h-[400px]">
+            <div className="anime-mascot flex-col items-center justify-center animate-in zoom-in-75 fade-in duration-1000 delay-300">
+              <div className="relative w-72 h-72 md:w-96 md:h-96 lg:w-[480px] lg:h-[480px]">
                 {animeMascot && (
                   <div className="relative w-full h-full animate-float">
                     <Image
                       src={animeMascot.imageUrl}
-                      alt="Anime Mascot"
+                      alt="Anime Mascot Greeting"
                       fill
-                      className="object-contain filter drop-shadow-[0_0_30px_rgba(255,105,180,0.4)]"
+                      className="object-contain filter drop-shadow-[0_0_40px_rgba(255,105,180,0.6)]"
                       data-ai-hint={animeMascot.imageHint}
                       priority
                     />
                     {/* Speech Bubble */}
-                    <div className="absolute -top-4 -right-8 bg-white/95 backdrop-blur-md px-6 py-3 rounded-3xl rounded-bl-none border-2 border-pink-400 shadow-2xl animate-bounce">
-                      <span className="text-pink-600 font-black text-xs tracking-tight whitespace-nowrap">HI THERE! ^_^</span>
+                    <div className="absolute top-0 -right-4 bg-white/95 backdrop-blur-md px-8 py-4 rounded-[2rem] rounded-bl-none border-4 border-pink-400 shadow-2xl animate-bounce">
+                      <span className="text-pink-600 font-black text-sm tracking-tight whitespace-nowrap">HELLO MASTER! ^_^</span>
                     </div>
                   </div>
                 )}
