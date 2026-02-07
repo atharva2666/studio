@@ -30,6 +30,18 @@
       "description": "Dynamic anime male character in a tech setting",
       "imageUrl": "https://picsum.photos/seed/anime-boy-tech/600/800",
       "imageHint": "anime boy"
+    },
+    {
+      "id": "anime-character-top-left",
+      "description": "Anime character peeking from top corner",
+      "imageUrl": "https://picsum.photos/seed/anime-peek-1/400/600",
+      "imageHint": "anime girl"
+    },
+    {
+      "id": "anime-character-top-right",
+      "description": "Anime character peeking from top corner",
+      "imageUrl": "https://picsum.photos/seed/anime-peek-2/400/600",
+      "imageHint": "anime boy"
     }
   ]
 }
