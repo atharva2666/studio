@@ -7,7 +7,7 @@ import ProjectShowcase from '@/components/ProjectShowcase';
 import InteractiveExperience from '@/components/InteractiveExperience';
 import Contact from '@/components/Contact';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, Terminal, Cpu, Zap } from 'lucide-react';
+import { Sparkles, Terminal, Cpu, Zap, Brain } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -131,6 +131,3 @@ export default function Home() {
     </main>
   );
 }
-
-// Add Brain import from lucide-react if not already there
-import { Brain } from 'lucide-react';
