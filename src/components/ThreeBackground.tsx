@@ -17,44 +17,41 @@ export default function ThreeBackground() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     containerRef.current.appendChild(renderer.domElement);
 
-    const group = new THREE.Group();
-    scene.add(group);
-
-    const particlesCount = 200;
+    const particlesCount = 150;
     const positions = new Float32Array(particlesCount * 3);
     const velocities = new Float32Array(particlesCount * 3);
     
     for (let i = 0; i < particlesCount * 3; i++) {
-      positions[i] = (Math.random() - 0.5) * 20;
-      velocities[i] = (Math.random() - 0.5) * 0.012;
+      positions[i] = (Math.random() - 0.5) * 25;
+      velocities[i] = (Math.random() - 0.5) * 0.008;
     }
 
     const particlesGeometry = new THREE.BufferGeometry();
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.12,
-      color: 0xa855f7, // Vibrant Purple
-      transparent: true,
-      opacity: 0.9,
-      blending: THREE.AdditiveBlending,
-    });
-
-    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-    group.add(particlesMesh);
-
-    const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0xec4899, // Vibrant Pink/Accent
+      size: 0.08,
+      color: 0x9f7aea, // Soft primary purple
       transparent: true,
       opacity: 0.4,
       blending: THREE.AdditiveBlending,
     });
 
+    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particlesMesh);
+
+    const lineMaterial = new THREE.LineBasicMaterial({
+      color: 0x9f7aea,
+      transparent: true,
+      opacity: 0.1,
+      blending: THREE.AdditiveBlending,
+    });
+
     const lineGeometry = new THREE.BufferGeometry();
     const lineMesh = new THREE.LineSegments(lineGeometry, lineMaterial);
-    group.add(lineMesh);
+    scene.add(lineMesh);
 
-    camera.position.z = 8;
+    camera.position.z = 10;
 
     let mouseX = 0;
     let mouseY = 0;
@@ -79,14 +76,14 @@ export default function ThreeBackground() {
         posArray[iy] += velocities[iy];
         posArray[iz] += velocities[iz];
 
-        if (Math.abs(posArray[ix]) > 12) velocities[ix] *= -1;
-        if (Math.abs(posArray[iy]) > 12) velocities[iy] *= -1;
-        if (Math.abs(posArray[iz]) > 12) velocities[iz] *= -1;
+        if (Math.abs(posArray[ix]) > 15) velocities[ix] *= -1;
+        if (Math.abs(posArray[iy]) > 15) velocities[iy] *= -1;
+        if (Math.abs(posArray[iz]) > 15) velocities[iz] *= -1;
       }
       particlesGeometry.attributes.position.needsUpdate = true;
 
       const linePositions = [];
-      const maxDistance = 3.5;
+      const maxDistance = 5;
       for (let i = 0; i < particlesCount; i++) {
         for (let j = i + 1; j < particlesCount; j++) {
           const dx = posArray[i * 3] - posArray[j * 3];
@@ -104,9 +101,8 @@ export default function ThreeBackground() {
       }
       lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
 
-      group.rotation.y += (mouseX * 0.4 - group.rotation.y) * 0.05;
-      group.rotation.x += (-mouseY * 0.4 - group.rotation.x) * 0.05;
-      group.rotation.z += 0.001;
+      scene.rotation.y += (mouseX * 0.1 - scene.rotation.y) * 0.02;
+      scene.rotation.x += (-mouseY * 0.1 - scene.rotation.x) * 0.02;
 
       renderer.render(scene, camera);
     };
@@ -135,8 +131,7 @@ export default function ThreeBackground() {
   return (
     <div 
       ref={containerRef} 
-      className="fixed inset-0 -z-20 pointer-events-none" 
-      style={{ background: 'radial-gradient(circle at center, rgba(20, 0, 40, 0.4) 0%, #05000a 100%)' }}
+      className="fixed inset-0 -z-10 pointer-events-none" 
     />
   );
 }
