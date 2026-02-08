@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sun, Moon, Zap, Leaf, Sparkles, Binary } from 'lucide-react';
 
@@ -17,63 +17,32 @@ export default function ThemeSwitcher() {
     window.dispatchEvent(new CustomEvent('theme-change', { detail: newTheme }));
   };
 
+  const themes = [
+    { id: 'dark', icon: <Moon className="w-3.5 h-3.5" />, label: 'Neural' },
+    { id: 'light', icon: <Sun className="w-3.5 h-3.5" />, label: 'Luminous' },
+    { id: 'cyber', icon: <Zap className="w-3.5 h-3.5" />, label: 'Cyber' },
+    { id: 'nature', icon: <Leaf className="w-3.5 h-3.5" />, label: 'Nature' },
+    { id: 'nebula', icon: <Sparkles className="w-3.5 h-3.5" />, label: 'Nebula' },
+    { id: 'matrix', icon: <Binary className="w-3.5 h-3.5" />, label: 'Matrix' },
+  ];
+
   return (
-    <div className="flex flex-wrap items-center justify-center gap-4 py-12 px-6">
-      <div className="glass-morphism p-2 rounded-2xl flex flex-wrap gap-2 justify-center max-w-2xl">
-        <Button
-          variant={theme === 'dark' ? 'default' : 'ghost'}
-          size="sm"
-          onClick={() => updateTheme('dark')}
-          className="rounded-xl gap-2 h-10 px-4"
-        >
-          <Moon className="w-4 h-4" />
-          <span className="hidden sm:inline">Neural</span>
-        </Button>
-        <Button
-          variant={theme === 'light' ? 'default' : 'ghost'}
-          size="sm"
-          onClick={() => updateTheme('light')}
-          className="rounded-xl gap-2 h-10 px-4"
-        >
-          <Sun className="w-4 h-4" />
-          <span className="hidden sm:inline">Luminous</span>
-        </Button>
-        <Button
-          variant={theme === 'cyber' ? 'default' : 'ghost'}
-          size="sm"
-          onClick={() => updateTheme('cyber')}
-          className="rounded-xl gap-2 h-10 px-4"
-        >
-          <Zap className="w-4 h-4" />
-          <span className="hidden sm:inline">Cyber</span>
-        </Button>
-        <Button
-          variant={theme === 'nature' ? 'default' : 'ghost'}
-          size="sm"
-          onClick={() => updateTheme('nature')}
-          className="rounded-xl gap-2 h-10 px-4"
-        >
-          <Leaf className="w-4 h-4" />
-          <span className="hidden sm:inline">Nature</span>
-        </Button>
-        <Button
-          variant={theme === 'nebula' ? 'default' : 'ghost'}
-          size="sm"
-          onClick={() => updateTheme('nebula')}
-          className="rounded-xl gap-2 h-10 px-4"
-        >
-          <Sparkles className="w-4 h-4" />
-          <span className="hidden sm:inline">Nebula</span>
-        </Button>
-        <Button
-          variant={theme === 'matrix' ? 'default' : 'ghost'}
-          size="sm"
-          onClick={() => updateTheme('matrix')}
-          className="rounded-xl gap-2 h-10 px-4"
-        >
-          <Binary className="w-4 h-4" />
-          <span className="hidden sm:inline">Matrix</span>
-        </Button>
+    <div className="flex justify-center">
+      <div className="glass-morphism p-1.5 rounded-2xl flex flex-wrap gap-1 justify-center max-w-3xl border-white/[0.03]">
+        {themes.map((t) => (
+          <Button
+            key={t.id}
+            variant={theme === t.id ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => updateTheme(t.id as Theme)}
+            className={`rounded-xl gap-2 h-9 px-4 transition-all duration-500 ${
+              theme === t.id ? 'bg-primary/20 text-primary hover:bg-primary/30' : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            {t.icon}
+            <span className="text-[10px] font-bold uppercase tracking-widest hidden sm:inline">{t.label}</span>
+          </Button>
+        ))}
       </div>
     </div>
   );
