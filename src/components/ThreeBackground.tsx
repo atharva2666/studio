@@ -25,7 +25,7 @@ export default function ThreeBackground() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     containerRef.current.appendChild(renderer.domElement);
 
-    // --- Texture Generators ---
+    // --- Texture Generators (Optimized) ---
     const textures = {
       circle: (() => {
         const canvas = document.createElement('canvas');
@@ -175,7 +175,6 @@ export default function ThreeBackground() {
     };
     
     const onMouseMove = (e: MouseEvent) => {
-      // Gentle parallax if not dragging
       if (!isDragging && !isPanning) {
         targetRotY += (e.clientX - window.innerWidth / 2) * 0.00001;
         targetRotX += (e.clientY - window.innerHeight / 2) * 0.00001;
@@ -201,7 +200,7 @@ export default function ThreeBackground() {
         prevX = e.touches[0].clientX;
         prevY = e.touches[0].clientY;
       } else if (e.touches.length === 2) {
-        isDragging = false; // Stop rotation during zoom/pan
+        isDragging = false;
         pinchStartDist = Math.hypot(
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY
@@ -213,13 +212,13 @@ export default function ThreeBackground() {
 
     const onTouchMove = (e: TouchEvent) => {
       if (e.touches.length === 1 && isDragging) {
-        // We do NOT call preventDefault here to allow page scrolling
+        // Allow default scroll for single finger touch
         targetRotY += (e.touches[0].clientX - prevX) * 0.003;
         targetRotX += (e.touches[0].clientY - prevY) * 0.003;
         prevX = e.touches[0].clientX;
         prevY = e.touches[0].clientY;
       } else if (e.touches.length === 2) {
-        // For two-finger interactions, we prevent default to zoom/pan the background instead of scrolling
+        // Prevent default only for two finger gestures
         if (e.cancelable) e.preventDefault();
         
         const dist = Math.hypot(
@@ -240,8 +239,6 @@ export default function ThreeBackground() {
     };
 
     const onWheel = (e: WheelEvent) => { 
-      // Only zoom if hovering background? No, backgrounds usually don't block wheel.
-      // We only allow zoom via wheel if Ctrl is held or something? Let's just keep it subtle.
       if (Math.abs(e.deltaY) > 50) {
         targetZoom = Math.max(300, Math.min(2000, targetZoom + e.deltaY * 0.2)); 
       }
@@ -300,7 +297,6 @@ export default function ThreeBackground() {
       }
       posAttr.needsUpdate = true;
 
-      // Smooth inertia
       currentRotX += (targetRotX - currentRotX) * 0.08;
       currentRotY += (targetRotY - currentRotY) * 0.08;
       currentPanX += (targetPanX - currentPanX) * 0.08;
@@ -311,7 +307,7 @@ export default function ThreeBackground() {
       scene.rotation.y = currentRotY;
       scene.position.x = currentPanX;
       scene.position.y = currentPanY;
-      targetRotY += 0.0001; // Constant slow drift
+      targetRotY += 0.0001;
       camera.position.z = zoomLevel;
 
       renderer.render(scene, camera);

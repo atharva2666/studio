@@ -11,7 +11,7 @@ import TelemetryChart from '@/components/TelemetryChart';
 import TechStack from '@/components/TechStack';
 import Experience from '@/components/Experience';
 import { Badge } from '@/components/ui/badge';
-import { Cpu, ArrowDown, Activity, ShieldCheck, Layers, Terminal } from 'lucide-react';
+import { Cpu, ArrowDown, Activity, ShieldCheck, Layers } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -19,7 +19,7 @@ export default function Home() {
       <ThreeBackground />
       <Navbar />
       
-      {/* Hero Section */}
+      {/* Hero Section - Above the fold focus */}
       <section className="min-h-screen flex flex-col justify-center px-6 md:px-12 max-w-7xl mx-auto pt-24 pb-12 relative z-10">
         <div className="animate-in fade-in slide-in-from-bottom-12 duration-1000">
           
