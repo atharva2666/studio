@@ -7,8 +7,9 @@ import ProjectShowcase from '@/components/ProjectShowcase';
 import InteractiveExperience from '@/components/InteractiveExperience';
 import Contact from '@/components/Contact';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
+import TelemetryChart from '@/components/TelemetryChart';
 import { Badge } from '@/components/ui/badge';
-import { Cpu, ArrowDown, Sparkles } from 'lucide-react';
+import { Cpu, ArrowDown, Sparkles, Activity } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
       <ThreeBackground />
       <Navbar />
       
+      {/* Hero Section */}
       <section className="min-h-screen flex flex-col justify-center px-6 md:px-12 max-w-7xl mx-auto pt-32 pb-12 relative z-10 pointer-events-none">
         <div className="animate-in fade-in slide-in-from-bottom-12 duration-1000 relative pointer-events-auto">
           
@@ -32,6 +34,17 @@ export default function Home() {
                 The Future<br />
                 <span className="text-primary/70 italic">Today.</span>
               </h1>
+            </div>
+            
+            {/* Real-time Telemetry Widget */}
+            <div className="hidden xl:block w-[400px] glass-morphism p-8 rounded-[2.5rem] pointer-events-auto border-none">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground flex items-center gap-2">
+                  <Activity className="w-3 h-3 text-primary" /> Live Telemetry
+                </span>
+                <Badge variant="outline" className="text-[9px] border-primary/20 text-primary px-2">v5.0.0</Badge>
+              </div>
+              <TelemetryChart />
             </div>
           </div>
           
@@ -53,18 +66,22 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Projects Section */}
       <div id="projects" className="py-24 relative z-10 bg-background/50 backdrop-blur-sm border-y border-foreground/[0.03]">
         <ProjectShowcase />
       </div>
 
+      {/* Terminal Section */}
       <div id="terminal" className="py-24 relative z-10">
         <InteractiveExperience />
       </div>
 
+      {/* Contact Section */}
       <div className="relative z-10">
         <Contact />
       </div>
 
+      {/* Footer */}
       <footer className="py-24 border-t border-foreground/[0.03] bg-background/80 backdrop-blur-md relative z-10">
         <div className="max-w-7xl mx-auto px-6 flex flex-col items-center gap-12">
           
