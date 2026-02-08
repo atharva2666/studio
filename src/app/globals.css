@@ -103,6 +103,15 @@
     --particle-color: #fbbf24;
     --border: 45 10% 15%;
   }
+
+  .phantom {
+    --background: 270 50% 2%;
+    --foreground: 270 100% 90%;
+    --primary: 280 100% 60%;
+    --accent: 300 100% 50%;
+    --particle-color: #a855f7;
+    --border: 270 50% 10%;
+  }
 }
 
 @layer base {

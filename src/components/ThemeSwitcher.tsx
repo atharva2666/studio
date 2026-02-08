@@ -2,16 +2,16 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Sun, Moon, Zap, Leaf, Sparkles, Binary, Gauge, Heart, Crown } from 'lucide-react';
+import { Sun, Moon, Zap, Leaf, Sparkles, Binary, Gauge, Heart, Crown, Ghost } from 'lucide-react';
 
-type Theme = 'dark' | 'light' | 'cyber' | 'nature' | 'nebula' | 'matrix' | 'turbo' | 'manga' | 'vogue';
+type Theme = 'dark' | 'light' | 'cyber' | 'nature' | 'nebula' | 'matrix' | 'turbo' | 'manga' | 'vogue' | 'phantom';
 
 export default function ThemeSwitcher() {
   const [theme, setTheme] = useState<Theme>('dark');
 
   const updateTheme = (newTheme: Theme) => {
     const root = window.document.documentElement;
-    root.classList.remove('dark', 'light', 'cyber', 'nature', 'nebula', 'matrix', 'turbo', 'manga', 'vogue');
+    root.classList.remove('dark', 'light', 'cyber', 'nature', 'nebula', 'matrix', 'turbo', 'manga', 'vogue', 'phantom');
     root.classList.add(newTheme);
     setTheme(newTheme);
     window.dispatchEvent(new CustomEvent('theme-change', { detail: newTheme }));
@@ -27,6 +27,7 @@ export default function ThemeSwitcher() {
     { id: 'turbo', icon: <Gauge className="w-3.5 h-3.5" />, label: 'Turbo' },
     { id: 'manga', icon: <Heart className="w-3.5 h-3.5" />, label: 'Manga' },
     { id: 'vogue', icon: <Crown className="w-3.5 h-3.5" />, label: 'Vogue' },
+    { id: 'phantom', icon: <Ghost className="w-3.5 h-3.5" />, label: 'Phantom' },
   ];
 
   return (

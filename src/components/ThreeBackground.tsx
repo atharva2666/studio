@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-type Theme = 'dark' | 'light' | 'cyber' | 'nature' | 'nebula' | 'matrix' | 'turbo' | 'manga' | 'vogue';
+type Theme = 'dark' | 'light' | 'cyber' | 'nature' | 'nebula' | 'matrix' | 'turbo' | 'manga' | 'vogue' | 'phantom';
 
 export default function ThreeBackground() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -71,6 +71,18 @@ export default function ThreeBackground() {
         const ctx = canvas.getContext('2d')!;
         ctx.fillStyle = 'white'; ctx.fillRect(60, 0, 8, 128);
         return new THREE.CanvasTexture(canvas);
+      })(),
+      wisp: (() => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 64; canvas.height = 64;
+        const ctx = canvas.getContext('2d')!;
+        const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+        grad.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+        grad.addColorStop(0.4, 'rgba(255, 255, 255, 0.2)');
+        grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        ctx.fillStyle = grad; ctx.beginPath();
+        ctx.arc(32, 32, 32, 0, Math.PI * 2); ctx.fill();
+        return new THREE.CanvasTexture(canvas);
       })()
     };
 
@@ -99,7 +111,7 @@ export default function ThreeBackground() {
     const getThemeConfig = () => {
       const styles = getComputedStyle(document.documentElement);
       const colorHex = styles.getPropertyValue('--particle-color').trim();
-      const currentTheme = (document.documentElement.className.split(' ').find(c => ['dark', 'light', 'cyber', 'nature', 'nebula', 'matrix', 'turbo', 'manga', 'vogue'].includes(c)) || 'dark') as Theme;
+      const currentTheme = (document.documentElement.className.split(' ').find(c => ['dark', 'light', 'cyber', 'nature', 'nebula', 'matrix', 'turbo', 'manga', 'vogue', 'phantom'].includes(c)) || 'dark') as Theme;
       return { color: new THREE.Color(colorHex || '#6366f1'), theme: currentTheme };
     };
 
@@ -125,10 +137,10 @@ export default function ThreeBackground() {
           velAttr[i3] = (Math.random() - 0.5) * 0.4;
           velAttr[i3 + 1] = -0.5 - Math.random() * 0.8;
           velAttr[i3 + 2] = (Math.random() - 0.5) * 0.4;
-        } else if (theme === 'vogue') {
-          velAttr[i3] = (Math.random() - 0.5) * 0.1;
-          velAttr[i3 + 1] = (Math.random() - 0.5) * 0.1;
-          velAttr[i3 + 2] = (Math.random() - 0.5) * 0.1;
+        } else if (theme === 'phantom') {
+          velAttr[i3] = (Math.random() - 0.5) * 2;
+          velAttr[i3 + 1] = (Math.random() - 0.5) * 2;
+          velAttr[i3 + 2] = (Math.random() - 0.5) * 2;
         } else {
           velAttr[i3] = (Math.random() - 0.5) * 0.15;
           velAttr[i3 + 1] = (Math.random() - 0.5) * 0.15;
@@ -147,19 +159,35 @@ export default function ThreeBackground() {
     // Interaction State
     let targetRotX = 0, targetRotY = 0;
     let currentRotX = 0, currentRotY = 0;
+    let targetPanX = 0, targetPanY = 0;
+    let currentPanX = 0, currentPanY = 0;
     let isDragging = false;
+    let isPanning = false;
     let prevX = 0, prevY = 0;
     let zoomLevel = 800, targetZoom = 800;
     let pinchStartDist = 0;
+    let prevTouchMidX = 0, prevTouchMidY = 0;
 
-    const onMouseDown = (e: MouseEvent) => { isDragging = true; prevX = e.clientX; prevY = e.clientY; };
+    const onMouseDown = (e: MouseEvent) => { 
+      if (e.button === 0) isDragging = true;
+      if (e.button === 2) isPanning = true;
+      prevX = e.clientX; prevY = e.clientY; 
+    };
+    
     const onMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return;
-      targetRotY += (e.clientX - prevX) * 0.0015;
-      targetRotX += (e.clientY - prevY) * 0.0015;
+      if (isDragging) {
+        targetRotY += (e.clientX - prevX) * 0.0015;
+        targetRotX += (e.clientY - prevY) * 0.0015;
+      }
+      if (isPanning) {
+        targetPanX -= (e.clientX - prevX) * 0.5;
+        targetPanY += (e.clientY - prevY) * 0.5;
+      }
       prevX = e.clientX; prevY = e.clientY;
     };
-    const onMouseUp = () => { isDragging = false; };
+    
+    const onMouseUp = () => { isDragging = false; isPanning = false; };
+    const onContextMenu = (e: MouseEvent) => e.preventDefault();
 
     const onTouchStart = (e: TouchEvent) => {
       if (e.touches.length === 1) {
@@ -171,6 +199,8 @@ export default function ThreeBackground() {
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY
         );
+        prevTouchMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        prevTouchMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
       }
     };
 
@@ -189,6 +219,14 @@ export default function ThreeBackground() {
         const delta = dist - pinchStartDist;
         targetZoom = Math.max(300, Math.min(2000, targetZoom - delta * 2));
         pinchStartDist = dist;
+
+        const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+        targetPanX -= (midX - prevTouchMidX) * 1.5;
+        targetPanY += (midY - prevTouchMidY) * 1.5;
+        prevTouchMidX = midX;
+        prevTouchMidY = midY;
+
         if (e.cancelable) e.preventDefault();
       }
     };
@@ -200,6 +238,7 @@ export default function ThreeBackground() {
     window.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
+    window.addEventListener('contextmenu', onContextMenu);
     window.addEventListener('touchstart', onTouchStart, { passive: false });
     window.addEventListener('touchmove', onTouchMove, { passive: false });
     window.addEventListener('touchend', onMouseUp);
@@ -218,6 +257,7 @@ export default function ThreeBackground() {
         case 'nebula': material.map = textures.star; material.size = 18; break;
         case 'turbo': material.map = textures.streak; material.size = 40; break;
         case 'vogue': material.map = textures.circle; material.size = 36; material.opacity = 0.15; break;
+        case 'phantom': material.map = textures.wisp; material.size = 50; material.opacity = 0.2; break;
         default: material.map = textures.circle; material.size = 12;
       }
       material.needsUpdate = true;
@@ -251,10 +291,14 @@ export default function ThreeBackground() {
       // Smooth inertia
       currentRotX += (targetRotX - currentRotX) * 0.08;
       currentRotY += (targetRotY - currentRotY) * 0.08;
+      currentPanX += (targetPanX - currentPanX) * 0.08;
+      currentPanY += (targetPanY - currentPanY) * 0.08;
       zoomLevel += (targetZoom - zoomLevel) * 0.08;
 
       scene.rotation.x = currentRotX;
       scene.rotation.y = currentRotY;
+      scene.position.x = currentPanX;
+      scene.position.y = currentPanY;
       targetRotY += 0.0001; // Constant slow drift
       camera.position.z = zoomLevel;
 
@@ -276,6 +320,7 @@ export default function ThreeBackground() {
       window.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
+      window.removeEventListener('contextmenu', onContextMenu);
       window.removeEventListener('touchstart', onTouchStart);
       window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('touchend', onMouseUp);
