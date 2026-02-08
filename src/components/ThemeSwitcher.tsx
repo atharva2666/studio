@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -7,7 +8,7 @@ import { Sun, Moon, Zap, Leaf, Sparkles, Binary, Gauge, Heart, Crown, Ghost } fr
 type Theme = 'dark' | 'light' | 'cyber' | 'nature' | 'nebula' | 'matrix' | 'turbo' | 'manga' | 'vogue' | 'phantom';
 
 export default function ThemeSwitcher() {
-  const [theme, setTheme] = useState<Theme>('dark');
+  const [theme, setTheme] = useState<Theme>('turbo');
 
   const updateTheme = (newTheme: Theme) => {
     const root = window.document.documentElement;
@@ -18,13 +19,13 @@ export default function ThemeSwitcher() {
   };
 
   const themes = [
+    { id: 'turbo', icon: <Gauge className="w-3.5 h-3.5" />, label: 'Turbo' },
     { id: 'dark', icon: <Moon className="w-3.5 h-3.5" />, label: 'Neural' },
     { id: 'light', icon: <Sun className="w-3.5 h-3.5" />, label: 'Luminous' },
     { id: 'cyber', icon: <Zap className="w-3.5 h-3.5" />, label: 'Cyber' },
     { id: 'nature', icon: <Leaf className="w-3.5 h-3.5" />, label: 'Nature' },
     { id: 'nebula', icon: <Sparkles className="w-3.5 h-3.5" />, label: 'Nebula' },
     { id: 'matrix', icon: <Binary className="w-3.5 h-3.5" />, label: 'Matrix' },
-    { id: 'turbo', icon: <Gauge className="w-3.5 h-3.5" />, label: 'Turbo' },
     { id: 'manga', icon: <Heart className="w-3.5 h-3.5" />, label: 'Manga' },
     { id: 'vogue', icon: <Crown className="w-3.5 h-3.5" />, label: 'Vogue' },
     { id: 'phantom', icon: <Ghost className="w-3.5 h-3.5" />, label: 'Phantom' },
