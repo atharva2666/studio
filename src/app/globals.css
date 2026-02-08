@@ -18,8 +18,6 @@
     --muted-foreground: 215 20% 65%;
     --accent: 217 91% 60%;
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 62% 30%;
-    --destructive-foreground: 210 40% 98%;
     --border: 217 32% 17%;
     --input: 217 32% 17%;
     --ring: 226 100% 64%;
@@ -78,6 +76,32 @@
     --primary: 120 100% 50%;
     --accent: 120 100% 40%;
     --particle-color: #22c55e;
+  }
+
+  .turbo {
+    --background: 0 0% 3%;
+    --foreground: 0 0% 98%;
+    --primary: 0 84% 60%;
+    --accent: 0 0% 70%;
+    --particle-color: #ef4444;
+    --border: 0 0% 15%;
+  }
+
+  .manga {
+    --background: 320 40% 2%;
+    --foreground: 320 100% 95%;
+    --primary: 320 100% 70%;
+    --accent: 280 100% 70%;
+    --particle-color: #f472b6;
+  }
+
+  .vogue {
+    --background: 45 10% 2%;
+    --foreground: 45 20% 90%;
+    --primary: 45 100% 60%;
+    --accent: 45 40% 40%;
+    --particle-color: #fbbf24;
+    --border: 45 10% 15%;
   }
 }
 

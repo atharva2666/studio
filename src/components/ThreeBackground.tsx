@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-type Theme = 'dark' | 'light' | 'cyber' | 'nature' | 'nebula' | 'matrix';
+type Theme = 'dark' | 'light' | 'cyber' | 'nature' | 'nebula' | 'matrix' | 'turbo' | 'manga' | 'vogue';
 
 export default function ThreeBackground() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -63,11 +63,18 @@ export default function ThreeBackground() {
         const ctx = canvas.getContext('2d')!;
         ctx.fillStyle = 'white'; ctx.font = 'bold 48px monospace';
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText('1', 32, 32); return new THREE.CanvasTexture(canvas);
+        ctx.fillText(Math.random() > 0.5 ? '1' : '0', 32, 32); return new THREE.CanvasTexture(canvas);
+      })(),
+      streak: (() => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 64; canvas.height = 64;
+        const ctx = canvas.getContext('2d')!;
+        ctx.fillStyle = 'white'; ctx.fillRect(28, 0, 8, 64);
+        return new THREE.CanvasTexture(canvas);
       })()
     };
 
-    const particlesCount = 1800;
+    const particlesCount = 2000;
     const posAttr = new THREE.BufferAttribute(new Float32Array(particlesCount * 3), 3);
     const colorAttr = new THREE.BufferAttribute(new Float32Array(particlesCount * 3), 3);
     const velAttr = new Float32Array(particlesCount * 3);
@@ -77,7 +84,7 @@ export default function ThreeBackground() {
     geometry.setAttribute('color', colorAttr);
 
     const material = new THREE.PointsMaterial({
-      size: 8,
+      size: 10,
       vertexColors: true,
       transparent: true,
       opacity: 0.4,
@@ -92,7 +99,7 @@ export default function ThreeBackground() {
     const getThemeConfig = () => {
       const styles = getComputedStyle(document.documentElement);
       const colorHex = styles.getPropertyValue('--particle-color').trim();
-      const currentTheme = (document.documentElement.className.split(' ').find(c => ['dark', 'light', 'cyber', 'nature', 'nebula', 'matrix'].includes(c)) || 'dark') as Theme;
+      const currentTheme = (document.documentElement.className.split(' ').find(c => ['dark', 'light', 'cyber', 'nature', 'nebula', 'matrix', 'turbo', 'manga', 'vogue'].includes(c)) || 'dark') as Theme;
       return { color: new THREE.Color(colorHex || '#6366f1'), theme: currentTheme };
     };
 
@@ -103,21 +110,25 @@ export default function ThreeBackground() {
       const theme = themeRef.current;
       for (let i = 0; i < particlesCount; i++) {
         const i3 = i * 3;
-        posAttr.array[i3] = (Math.random() - 0.5) * 1200;
-        posAttr.array[i3 + 1] = (Math.random() - 0.5) * 1200;
-        posAttr.array[i3 + 2] = (Math.random() - 0.5) * 1200;
+        posAttr.array[i3] = (Math.random() - 0.5) * 1400;
+        posAttr.array[i3 + 1] = (Math.random() - 0.5) * 1400;
+        posAttr.array[i3 + 2] = (Math.random() - 0.5) * 1400;
         
         if (theme === 'matrix') {
-          velAttr[i3 + 1] = -Math.random() * 2 - 1;
+          velAttr[i3 + 1] = -Math.random() * 2 - 1.5;
           velAttr[i3] = velAttr[i3 + 2] = 0;
-        } else if (theme === 'nature') {
-          velAttr[i3] = (Math.random() - 0.5) * 0.2;
-          velAttr[i3 + 1] = -0.3 - Math.random() * 0.5;
-          velAttr[i3 + 2] = (Math.random() - 0.5) * 0.2;
+        } else if (theme === 'turbo') {
+          velAttr[i3] = -4 - Math.random() * 8;
+          velAttr[i3 + 1] = (Math.random() - 0.5) * 0.1;
+          velAttr[i3 + 2] = (Math.random() - 0.5) * 0.1;
+        } else if (theme === 'nature' || theme === 'manga') {
+          velAttr[i3] = (Math.random() - 0.5) * 0.3;
+          velAttr[i3 + 1] = -0.4 - Math.random() * 0.6;
+          velAttr[i3 + 2] = (Math.random() - 0.5) * 0.3;
         } else {
-          velAttr[i3] = (Math.random() - 0.5) * 0.15;
-          velAttr[i3 + 1] = (Math.random() - 0.5) * 0.15;
-          velAttr[i3 + 2] = (Math.random() - 0.5) * 0.15;
+          velAttr[i3] = (Math.random() - 0.5) * 0.2;
+          velAttr[i3 + 1] = (Math.random() - 0.5) * 0.2;
+          velAttr[i3 + 2] = (Math.random() - 0.5) * 0.2;
         }
         colorAttr.array[i3] = themeColor.r;
         colorAttr.array[i3 + 1] = themeColor.g;
@@ -129,19 +140,19 @@ export default function ThreeBackground() {
 
     initParticles();
 
-    // Interaction State with Inertia
+    // Interaction State
     let targetRotX = 0, targetRotY = 0;
     let currentRotX = 0, currentRotY = 0;
     let isDragging = false;
     let prevX = 0, prevY = 0;
-    let zoomLevel = 600, targetZoom = 600;
+    let zoomLevel = 700, targetZoom = 700;
     let pinchStartDist = 0;
 
     const onMouseDown = (e: MouseEvent) => { isDragging = true; prevX = e.clientX; prevY = e.clientY; };
     const onMouseMove = (e: MouseEvent) => {
       if (!isDragging) return;
-      targetRotY += (e.clientX - prevX) * 0.002;
-      targetRotX += (e.clientY - prevY) * 0.002;
+      targetRotY += (e.clientX - prevX) * 0.0015;
+      targetRotX += (e.clientY - prevY) * 0.0015;
       prevX = e.clientX; prevY = e.clientY;
     };
     const onMouseUp = () => isDragging = false;
@@ -155,22 +166,22 @@ export default function ThreeBackground() {
     };
     const onTouchMove = (e: TouchEvent) => {
       if (e.touches.length === 1 && isDragging) {
-        targetRotY += (e.touches[0].clientX - prevX) * 0.004;
-        targetRotX += (e.touches[0].clientY - prevY) * 0.004;
+        targetRotY += (e.touches[0].clientX - prevX) * 0.003;
+        targetRotX += (e.touches[0].clientY - prevY) * 0.003;
         prevX = e.touches[0].clientX; prevY = e.touches[0].clientY;
       } else if (e.touches.length === 2) {
         const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-        targetZoom -= (dist - pinchStartDist) * 2;
+        targetZoom -= (dist - pinchStartDist) * 1.5;
         pinchStartDist = dist;
       }
     };
-    const onWheel = (e: WheelEvent) => { targetZoom = Math.max(200, Math.min(1500, targetZoom + e.deltaY * 0.5)); };
+    const onWheel = (e: WheelEvent) => { targetZoom = Math.max(300, Math.min(1600, targetZoom + e.deltaY * 0.4)); };
 
     window.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
-    window.addEventListener('touchstart', onTouchStart);
-    window.addEventListener('touchmove', onTouchMove);
+    window.addEventListener('touchstart', onTouchStart, { passive: false });
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
     window.addEventListener('touchend', onMouseUp);
     window.addEventListener('wheel', onWheel);
 
@@ -181,10 +192,13 @@ export default function ThreeBackground() {
       
       material.opacity = themeRef.current === 'light' ? 0.6 : 0.4;
       switch(themeRef.current) {
-        case 'matrix': material.map = textures.matrix; material.size = 22; break;
-        case 'nature': material.map = textures.leaf; material.size = 18; break;
-        case 'nebula': material.map = textures.star; material.size = 14; break;
-        default: material.map = textures.circle; material.size = 10;
+        case 'matrix': material.map = textures.matrix; material.size = 24; break;
+        case 'nature': 
+        case 'manga': material.map = textures.leaf; material.size = 20; break;
+        case 'nebula': material.map = textures.star; material.size = 16; break;
+        case 'turbo': material.map = textures.streak; material.size = 32; break;
+        case 'vogue': material.map = textures.circle; material.size = 40; material.opacity = 0.2; break;
+        default: material.map = textures.circle; material.size = 12;
       }
       material.needsUpdate = true;
       initParticles();
@@ -204,10 +218,13 @@ export default function ThreeBackground() {
         positions[i3 + 1] += velAttr[i3 + 1];
         positions[i3 + 2] += velAttr[i3 + 2];
         
-        if (Math.abs(positions[i3]) > 600) positions[i3] *= -0.98;
-        if (positions[i3+1] < -600) positions[i3+1] = 600;
-        if (positions[i3+1] > 600 && theme !== 'matrix' && theme !== 'nature') positions[i3+1] = -600;
-        if (Math.abs(positions[i3+2]) > 600) positions[i3+2] *= -0.98;
+        const bound = 800;
+        if (positions[i3] < -bound) positions[i3] = bound;
+        if (positions[i3] > bound) positions[i3] = -bound;
+        if (positions[i3 + 1] < -bound) positions[i3 + 1] = bound;
+        if (positions[i3 + 1] > bound) positions[i3 + 1] = -bound;
+        if (positions[i3 + 2] < -bound) positions[i3 + 2] = bound;
+        if (positions[i3 + 2] > bound) positions[i3 + 2] = -bound;
       }
       posAttr.needsUpdate = true;
 
@@ -217,7 +234,7 @@ export default function ThreeBackground() {
 
       scene.rotation.x = currentRotX;
       scene.rotation.y = currentRotY;
-      targetRotY += 0.0003; 
+      targetRotY += 0.0002; 
       camera.position.z = zoomLevel;
 
       renderer.render(scene, camera);
