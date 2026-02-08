@@ -9,7 +9,7 @@ import Contact from '@/components/Contact';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 import TelemetryChart from '@/components/TelemetryChart';
 import { Badge } from '@/components/ui/badge';
-import { Cpu, ArrowDown, Activity, ShieldCheck } from 'lucide-react';
+import { Cpu, ArrowDown, Activity, ShieldCheck, Terminal, Layers } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -19,97 +19,130 @@ export default function Home() {
       
       {/* Hero Section */}
       <section className="min-h-screen flex flex-col justify-center px-6 md:px-12 max-w-7xl mx-auto pt-24 pb-12 relative z-10">
-        <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000">
+        <div className="animate-in fade-in slide-in-from-bottom-12 duration-1000">
           
-          <div className="flex items-center gap-4 mb-8">
-            <Badge className="bg-primary/5 text-primary border-primary/10 px-4 py-1.5 rounded-full font-bold tracking-[0.3em] text-[9px] flex items-center gap-2 backdrop-blur-md">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-              CORE PROTOCOL v6.0.0
+          <div className="flex items-center gap-4 mb-10">
+            <Badge className="bg-primary/5 text-primary border-primary/20 px-5 py-2 rounded-full font-black tracking-[0.4em] text-[10px] flex items-center gap-3 backdrop-blur-xl">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+              CORE PROTOCOL v7.0.0
             </Badge>
-            <div className="hidden sm:flex items-center gap-2 text-[9px] font-bold tracking-widest text-muted-foreground opacity-60">
-              <ShieldCheck className="w-3 h-3" />
-              SYSTEM SECURE
+            <div className="hidden sm:flex items-center gap-3 text-[10px] font-black tracking-widest text-muted-foreground/40">
+              <ShieldCheck className="w-4 h-4" />
+              ENVIRONMENT STABLE
             </div>
           </div>
           
-          <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-12">
-            <div className="flex-1 space-y-10">
-              <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-[8.5rem] font-headline font-black leading-[0.9] tracking-tighter text-gradient">
-                Design.<br />
-                Code.<br />
-                <span className="text-primary/60">Scale.</span>
-              </h1>
+          <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-20">
+            <div className="flex-1 space-y-12">
+              <div className="space-y-4">
+                <h1 className="text-7xl sm:text-8xl md:text-9xl lg:text-[10rem] font-headline font-black leading-[0.85] tracking-tighter text-gradient">
+                  Design.<br />
+                  Code.<br />
+                  <span className="text-primary/40">Scale.</span>
+                </h1>
+              </div>
               
-              <div className="max-w-3xl">
+              <div className="max-w-4xl">
                 <PersonalizedIntro />
               </div>
             </div>
             
             {/* Minimal Telemetry Widget */}
-            <div className="hidden xl:block w-[380px] glass-morphism p-10 rounded-[2rem] border-none mt-8">
-              <div className="flex items-center justify-between mb-8">
-                <div className="space-y-1">
-                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground flex items-center gap-2">
-                    <Activity className="w-3 h-3 text-primary" /> Logic Engine
+            <div className="hidden xl:block w-[420px] glass-morphism p-12 rounded-[3rem] border-none mt-12 scanline overflow-hidden">
+              <div className="flex items-center justify-between mb-10">
+                <div className="space-y-2">
+                  <span className="text-[11px] font-black uppercase tracking-[0.5em] text-primary flex items-center gap-3">
+                    <Activity className="w-4 h-4" /> Logic Stream
                   </span>
-                  <p className="text-[9px] text-muted-foreground/40 font-mono">NODE_CLUSTER_01</p>
+                  <p className="text-[10px] text-muted-foreground/30 font-mono">NODE_CLUSTER_CORE_01</p>
                 </div>
-                <Badge variant="outline" className="text-[9px] border-primary/10 text-primary/60 px-2 py-0">STABLE</Badge>
+                <div className="flex flex-col items-end gap-1">
+                  <Badge variant="outline" className="text-[9px] border-primary/20 text-primary px-3 py-0.5 font-bold">READY</Badge>
+                  <span className="text-[8px] font-mono text-muted-foreground/20">Uptime: 99.9%</span>
+                </div>
               </div>
               <TelemetryChart />
+              <div className="mt-8 pt-8 border-t border-white/5 grid grid-cols-2 gap-6">
+                <div className="space-y-1">
+                  <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/40">Throughput</p>
+                  <p className="text-lg font-headline font-bold">4.2 TB/s</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/40">Latency</p>
+                  <p className="text-lg font-headline font-bold">12ms</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         <div 
-          className="absolute bottom-12 left-6 md:left-12 flex items-center gap-6 opacity-30 hover:opacity-100 transition-all cursor-pointer group"
+          className="absolute bottom-16 left-6 md:left-12 flex items-center gap-8 opacity-40 hover:opacity-100 transition-all cursor-pointer group"
           onClick={() => {
             document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
           }}
         >
-          <div className="w-10 h-10 rounded-full border border-foreground/10 flex items-center justify-center group-hover:bg-foreground/5 transition-all duration-300">
-            <ArrowDown className="w-4 h-4 text-foreground group-hover:translate-y-1 transition-transform" />
+          <div className="w-14 h-14 rounded-full border border-foreground/10 flex items-center justify-center group-hover:bg-primary/10 group-hover:border-primary/20 transition-all duration-500">
+            <ArrowDown className="w-5 h-5 text-foreground group-hover:text-primary group-hover:translate-y-2 transition-all" />
           </div>
-          <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-foreground/50 group-hover:text-primary transition-colors">Jump to Deployment</span>
+          <div className="space-y-1">
+            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-foreground/40 group-hover:text-primary transition-colors block">Deployment Hub</span>
+            <span className="text-[8px] font-mono text-muted-foreground/20">Scroll to Explore</span>
+          </div>
         </div>
       </section>
 
       {/* Projects Section */}
-      <div id="projects" className="py-32 relative z-10 bg-background/30 backdrop-blur-sm border-y border-foreground/[0.02]">
+      <div id="projects" className="py-40 relative z-10 bg-background/40 backdrop-blur-md border-y border-white/[0.03]">
         <ProjectShowcase />
       </div>
 
       {/* Terminal Section */}
-      <div id="terminal" className="py-32 relative z-10">
+      <div id="terminal" className="py-40 relative z-10">
         <InteractiveExperience />
       </div>
 
       {/* Contact Section */}
-      <div className="relative z-10">
+      <div className="relative z-10 py-20">
         <Contact />
       </div>
 
       {/* Footer */}
-      <footer className="py-24 border-t border-foreground/[0.02] bg-background/60 backdrop-blur-md relative z-10">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col items-center gap-16">
+      <footer className="py-32 border-t border-white/[0.03] bg-background/80 backdrop-blur-2xl relative z-10 overflow-hidden">
+        <div className="absolute inset-0 bg-primary/5 blur-[120px] -z-10 translate-y-1/2" />
+        <div className="max-w-7xl mx-auto px-6 flex flex-col items-center gap-24">
           
-          <div className="flex flex-col items-center gap-4">
-             <span className="text-[9px] font-black uppercase tracking-[0.5em] text-muted-foreground/60">System Environment</span>
+          <div className="flex flex-col items-center gap-6">
+             <span className="text-[10px] font-black uppercase tracking-[0.6em] text-muted-foreground/40">ENVIRONMENT OVERRIDE</span>
              <ThemeSwitcher />
           </div>
 
-          <div className="flex items-center gap-4 group cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-              <Cpu className="w-5 h-5 text-primary" />
+          <div className="flex flex-col items-center gap-10">
+            <div className="flex items-center gap-5 group cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+              <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-primary/20 transition-all duration-700">
+                <Cpu className="w-6 h-6 text-primary" />
+              </div>
+              <span className="text-3xl font-headline font-black tracking-tighter">
+                ATHARVA<span className="text-primary/60">.AI</span>
+              </span>
             </div>
-            <span className="text-xl font-headline font-black tracking-tighter">
-              ATHARVA<span className="text-primary/60">.AI</span>
-            </span>
+            
+            <div className="flex gap-12">
+              {['Github', 'LinkedIn', 'Terminal', 'Core'].map(item => (
+                <a key={item} href="#" className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground/40 hover:text-primary transition-colors">{item}</a>
+              ))}
+            </div>
           </div>
           
-          <p className="text-muted-foreground/40 text-[10px] font-bold uppercase tracking-[0.5em]">
-            © 2025 // Production Stable 6.0.0
-          </p>
+          <div className="text-center space-y-4">
+            <p className="text-muted-foreground/30 text-[10px] font-black uppercase tracking-[0.6em]">
+              © 2025 // STABLE KERNEL v7.0.0_REL
+            </p>
+            <div className="flex items-center justify-center gap-3 text-[8px] font-mono text-muted-foreground/10">
+              <Layers className="w-3 h-3" />
+              BUILD_ID_0X42FA_A7
+            </div>
+          </div>
         </div>
       </footer>
     </main>
