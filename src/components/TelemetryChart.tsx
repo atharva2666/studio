@@ -6,11 +6,11 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } f
 
 const chartConfig = {
   stability: {
-    label: "Neural Stability",
+    label: "Stability",
     color: "hsl(var(--primary))",
   },
   throughput: {
-    label: "Logic Throughput",
+    label: "Throughput",
     color: "hsl(var(--accent))",
   },
 } satisfies ChartConfig;
@@ -19,52 +19,51 @@ export default function TelemetryChart() {
   const [data, setData] = useState<{ time: string; stability: number; throughput: number }[]>([]);
 
   useEffect(() => {
-    // Initialize with some data
-    const initialData = Array.from({ length: 20 }).map((_, i) => ({
+    const initialData = Array.from({ length: 15 }).map((_, i) => ({
       time: i.toString(),
-      stability: 85 + Math.random() * 10,
-      throughput: 70 + Math.random() * 20,
+      stability: 90 + Math.random() * 8,
+      throughput: 75 + Math.random() * 15,
     }));
     setData(initialData);
 
     const interval = setInterval(() => {
       setData((prev) => {
         const nextTime = (parseInt(prev[prev.length - 1].time) + 1).toString();
-        const nextStability = Math.max(80, Math.min(99, prev[prev.length - 1].stability + (Math.random() - 0.5) * 5));
-        const nextThroughput = Math.max(60, Math.min(95, prev[prev.length - 1].throughput + (Math.random() - 0.5) * 10));
+        const nextStability = Math.max(88, Math.min(99, prev[prev.length - 1].stability + (Math.random() - 0.5) * 3));
+        const nextThroughput = Math.max(70, Math.min(98, prev[prev.length - 1].throughput + (Math.random() - 0.5) * 6));
         
         return [...prev.slice(1), { time: nextTime, stability: nextStability, throughput: nextThroughput }];
       });
-    }, 2000);
+    }, 3000);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="w-full h-[250px] mt-8 group">
+    <div className="w-full h-[200px] mt-2">
       <ChartContainer config={chartConfig}>
         <AreaChart data={data}>
           <defs>
             <linearGradient id="colorStability" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="var(--color-stability)" stopOpacity={0.3}/>
+              <stop offset="5%" stopColor="var(--color-stability)" stopOpacity={0.2}/>
               <stop offset="95%" stopColor="var(--color-stability)" stopOpacity={0}/>
             </linearGradient>
             <linearGradient id="colorThroughput" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="var(--color-throughput)" stopOpacity={0.3}/>
+              <stop offset="5%" stopColor="var(--color-throughput)" stopOpacity={0.2}/>
               <stop offset="95%" stopColor="var(--color-throughput)" stopOpacity={0}/>
             </linearGradient>
           </defs>
-          <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+          <CartesianGrid vertical={false} strokeDasharray="4 4" stroke="rgba(255,255,255,0.03)" />
           <XAxis dataKey="time" hide />
           <YAxis hide domain={[0, 100]} />
-          <ChartTooltip content={<ChartTooltipContent />} />
+          <ChartTooltip content={<ChartTooltipContent hideLabel />} />
           <Area
             type="monotone"
             dataKey="stability"
             stroke="var(--color-stability)"
             fillOpacity={1}
             fill="url(#colorStability)"
-            strokeWidth={3}
+            strokeWidth={2}
             isAnimationActive={false}
           />
           <Area
@@ -73,7 +72,7 @@ export default function TelemetryChart() {
             stroke="var(--color-throughput)"
             fillOpacity={1}
             fill="url(#colorThroughput)"
-            strokeWidth={3}
+            strokeWidth={2}
             isAnimationActive={false}
           />
         </AreaChart>
