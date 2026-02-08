@@ -175,13 +175,19 @@ export default function ThreeBackground() {
     };
     
     const onMouseMove = (e: MouseEvent) => {
-      if (isDragging) {
-        targetRotY += (e.clientX - prevX) * 0.0015;
-        targetRotX += (e.clientY - prevY) * 0.0015;
-      }
-      if (isPanning) {
-        targetPanX -= (e.clientX - prevX) * 0.5;
-        targetPanY += (e.clientY - prevY) * 0.5;
+      // Gentle parallax if not dragging
+      if (!isDragging && !isPanning) {
+        targetRotY += (e.clientX - window.innerWidth / 2) * 0.00001;
+        targetRotX += (e.clientY - window.innerHeight / 2) * 0.00001;
+      } else {
+        if (isDragging) {
+          targetRotY += (e.clientX - prevX) * 0.0015;
+          targetRotX += (e.clientY - prevY) * 0.0015;
+        }
+        if (isPanning) {
+          targetPanX -= (e.clientX - prevX) * 0.5;
+          targetPanY += (e.clientY - prevY) * 0.5;
+        }
       }
       prevX = e.clientX; prevY = e.clientY;
     };
@@ -195,6 +201,7 @@ export default function ThreeBackground() {
         prevX = e.touches[0].clientX;
         prevY = e.touches[0].clientY;
       } else if (e.touches.length === 2) {
+        isDragging = false; // Stop rotation during zoom/pan
         pinchStartDist = Math.hypot(
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY
@@ -206,12 +213,15 @@ export default function ThreeBackground() {
 
     const onTouchMove = (e: TouchEvent) => {
       if (e.touches.length === 1 && isDragging) {
+        // We do NOT call preventDefault here to allow page scrolling
         targetRotY += (e.touches[0].clientX - prevX) * 0.003;
         targetRotX += (e.touches[0].clientY - prevY) * 0.003;
         prevX = e.touches[0].clientX;
         prevY = e.touches[0].clientY;
-        if (e.cancelable) e.preventDefault();
       } else if (e.touches.length === 2) {
+        // For two-finger interactions, we prevent default to zoom/pan the background instead of scrolling
+        if (e.cancelable) e.preventDefault();
+        
         const dist = Math.hypot(
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY
@@ -226,23 +236,25 @@ export default function ThreeBackground() {
         targetPanY += (midY - prevTouchMidY) * 1.5;
         prevTouchMidX = midX;
         prevTouchMidY = midY;
-
-        if (e.cancelable) e.preventDefault();
       }
     };
 
     const onWheel = (e: WheelEvent) => { 
-      targetZoom = Math.max(300, Math.min(2000, targetZoom + e.deltaY * 0.5)); 
+      // Only zoom if hovering background? No, backgrounds usually don't block wheel.
+      // We only allow zoom via wheel if Ctrl is held or something? Let's just keep it subtle.
+      if (Math.abs(e.deltaY) > 50) {
+        targetZoom = Math.max(300, Math.min(2000, targetZoom + e.deltaY * 0.2)); 
+      }
     };
 
     window.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
     window.addEventListener('contextmenu', onContextMenu);
-    window.addEventListener('touchstart', onTouchStart, { passive: false });
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
     window.addEventListener('touchmove', onTouchMove, { passive: false });
     window.addEventListener('touchend', onMouseUp);
-    window.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('wheel', onWheel, { passive: true });
 
     const onThemeChange = () => {
       const config = getThemeConfig();

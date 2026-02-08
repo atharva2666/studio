@@ -8,8 +8,10 @@ import InteractiveExperience from '@/components/InteractiveExperience';
 import Contact from '@/components/Contact';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 import TelemetryChart from '@/components/TelemetryChart';
+import TechStack from '@/components/TechStack';
+import Experience from '@/components/Experience';
 import { Badge } from '@/components/ui/badge';
-import { Cpu, ArrowDown, Activity, ShieldCheck, Terminal, Layers } from 'lucide-react';
+import { Cpu, ArrowDown, Activity, ShieldCheck, Layers, Terminal } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -79,7 +81,7 @@ export default function Home() {
         <div 
           className="absolute bottom-16 left-6 md:left-12 flex items-center gap-8 opacity-40 hover:opacity-100 transition-all cursor-pointer group"
           onClick={() => {
-            document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('expertise')?.scrollIntoView({ behavior: 'smooth' });
           }}
         >
           <div className="w-14 h-14 rounded-full border border-foreground/10 flex items-center justify-center group-hover:bg-primary/10 group-hover:border-primary/20 transition-all duration-500">
@@ -92,20 +94,30 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Expertise Section */}
+      <section id="expertise" className="py-40 relative z-10 bg-background/20 backdrop-blur-sm">
+        <TechStack />
+      </section>
+
       {/* Projects Section */}
-      <div id="projects" className="py-40 relative z-10 bg-background/40 backdrop-blur-md border-y border-white/[0.03]">
+      <section id="projects" className="py-40 relative z-10 bg-background/40 backdrop-blur-md border-y border-white/[0.03]">
         <ProjectShowcase />
-      </div>
+      </section>
+
+      {/* Experience Section */}
+      <section id="experience" className="py-40 relative z-10">
+        <Experience />
+      </section>
 
       {/* Terminal Section */}
-      <div id="terminal" className="py-40 relative z-10">
+      <section id="terminal" className="py-40 relative z-10">
         <InteractiveExperience />
-      </div>
+      </section>
 
       {/* Contact Section */}
-      <div className="relative z-10 py-20">
+      <section id="contact" className="relative z-10 py-20">
         <Contact />
-      </div>
+      </section>
 
       {/* Footer */}
       <footer className="py-32 border-t border-white/[0.03] bg-background/80 backdrop-blur-2xl relative z-10 overflow-hidden">
